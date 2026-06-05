@@ -16,6 +16,22 @@
   --blue:#3d8ef5;--blue2:#2470d4;
   --red:#e84b4b;--green:#22d46a;
   --r:10px;--nav:62px;
+
+  /* ── SOURCE BRAND COLORS ── */
+
+  --c-frost:#22d46a; --c-frost-bg:rgba(34,212,106,.12); --c-frost-bdr:rgba(34,212,106,.3);
+  --c-king:#ff6b35; --c-king-bg:rgba(255,107,53,.12); --c-king-bdr:rgba(255,107,53,.3);
+  --c-mf:#3d8ef5;   --c-mf-bg:rgba(61,142,245,.12);   --c-mf-bdr:rgba(61,142,245,.3);
+  --c-fnx:#a855f7;  --c-fnx-bg:rgba(168,85,247,.12);  --c-fnx-bdr:rgba(168,85,247,.3);
+  --c-oth:#22d46a;  --c-oth-bg:rgba(34,212,106,.12);  --c-oth-bdr:rgba(34,212,106,.3);
+
+  /* ── RATING COLORS ── */
+  --rat-l:#22d46a;  /* Livre */
+  --rat-10:#3d8ef5; /* 10 anos */
+  --rat-12:#e8b84b; /* 12 anos */
+  --rat-14:#f59e3d; /* 14 anos */
+  --rat-16:#f56c3d; /* 16 anos */
+  --rat-18:#e84b4b; /* 18 anos */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
@@ -60,13 +76,37 @@ img{max-width:100%;}
 }
 /* desktop links */
 .nav-links{display:flex;align-items:center;gap:2px;}
+/* nav item wrapper for dropdown */
+.nav-item{position:relative;}
 .nav-link{
   background:transparent;border:none;color:var(--tx2);
   font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;
-  padding:8px 13px;border-radius:7px;cursor:pointer;transition:color .2s,background .2s;
-  white-space:nowrap;
+  padding:8px 12px;border-radius:7px;cursor:pointer;transition:color .2s,background .2s;
+  white-space:nowrap;display:flex;align-items:center;gap:5px;
 }
 .nav-link:hover,.nav-link.active{color:var(--tx);background:rgba(255,255,255,.08);}
+.nav-link .nav-arr{font-size:9px;opacity:.55;transition:transform .2s;}
+.nav-item:hover .nav-arr{transform:rotate(180deg);}
+/* dropdown */
+.nav-dd{
+  position:absolute;top:calc(100% + 8px);left:0;min-width:210px;
+  background:var(--bg2);border:1px solid var(--bdr2);border-radius:12px;
+  padding:6px;box-shadow:0 16px 48px rgba(0,0,0,.75);
+  pointer-events:none;opacity:0;transform:translateY(-6px);
+  transition:opacity .18s,transform .18s;z-index:500;
+}
+.nav-item:hover .nav-dd{pointer-events:auto;opacity:1;transform:translateY(0);}
+.dd-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);padding:8px 10px 4px;}
+.dd-sep{height:1px;background:var(--bdr);margin:4px 8px;}
+.dd-btn{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border-radius:7px;cursor:pointer;
+  font-size:13px;font-weight:500;color:var(--tx2);
+  background:transparent;border:none;width:100%;text-align:left;
+  font-family:'Outfit',sans-serif;transition:background .12s,color .12s;
+}
+.dd-btn:hover{background:rgba(255,255,255,.07);color:var(--tx);}
+.dd-btn .ddi{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
 /* right side */
 .nav-right{display:flex;align-items:center;gap:10px;}
 .nav-api-dot{
@@ -95,38 +135,57 @@ img{max-width:100%;}
   position:absolute;top:0;right:0;bottom:0;width:min(300px,85vw);
   background:var(--bg2);border-left:1px solid var(--bdr2);
   display:flex;flex-direction:column;animation:slideDown .25s ease;
-  padding:0 0 32px;overflow-y:auto;
+  overflow-y:auto;
 }
 .drawer-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px 20px;border-bottom:1px solid var(--bdr);
+  padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;
 }
-.drawer-logo{font-size:18px;font-weight:800;color:var(--gold);}
-.drawer-close{
-  background:rgba(255,255,255,.07);border:1px solid var(--bdr2);border-radius:7px;
-  color:var(--tx2);font-size:16px;padding:6px 10px;cursor:pointer;line-height:1;
+.drawer-logo{font-size:17px;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:8px;}
+.drawer-logo-mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--gold),#f07030);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.drawer-close{background:rgba(255,255,255,.07);border:1px solid var(--bdr2);border-radius:7px;color:var(--tx2);font-size:15px;padding:5px 9px;cursor:pointer;line-height:1;}
+.drawer-body{flex:1;padding:8px 10px 16px;overflow-y:auto;}
+/* flat links */
+.dr-flat{
+  display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:8px;
+  background:transparent;border:none;width:100%;cursor:pointer;text-align:left;
+  font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;color:var(--tx2);
+  transition:background .12s,color .12s;margin-bottom:2px;
 }
-.drawer-section{padding:16px 20px 0;}
-.drawer-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px;}
-.drawer-item{
-  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:9px;
-  cursor:pointer;transition:background .15s;margin-bottom:4px;
-  font-size:14px;font-weight:500;color:var(--tx2);
-  background:transparent;border:none;width:100%;text-align:left;font-family:'Outfit',sans-serif;
+.dr-flat:hover,.dr-flat.active{background:rgba(255,255,255,.07);color:var(--tx);}
+.dr-flat .dfi{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+/* accordion */
+.dr-acc{margin-bottom:2px;}
+.dr-acc-hd{
+  display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:8px;
+  background:transparent;border:none;width:100%;cursor:pointer;text-align:left;
+  font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;color:var(--tx2);
+  transition:background .12s,color .12s;
 }
-.drawer-item:hover,.drawer-item.active{background:rgba(255,255,255,.07);color:var(--tx);}
-.drawer-item .di-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0;}
-.drawer-item .di-badge{
-  margin-left:auto;background:var(--gold);color:#0a0a0a;
-  font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;
+.dr-acc-hd:hover,.dr-acc-hd.open{background:rgba(255,255,255,.07);color:var(--tx);}
+.dr-acc-hd .dfi{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.dr-acc-hd .acc-arr{margin-left:auto;font-size:10px;opacity:.5;transition:transform .2s;}
+.dr-acc-hd.open .acc-arr{transform:rotate(180deg);}
+.dr-acc-body{display:none;padding:2px 0 4px 34px;}
+.dr-acc-body.open{display:block;}
+.dr-sub{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;
+  background:transparent;border:none;width:100%;cursor:pointer;text-align:left;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:400;color:var(--tx3);
+  transition:background .1s,color .1s;
 }
-.drawer-divider{height:1px;background:var(--bdr);margin:12px 20px;}
-.drawer-api{
-  margin:16px 20px 0;padding:12px 14px;border-radius:9px;
+.dr-sub:hover{background:rgba(255,255,255,.05);color:var(--tx2);}
+.dr-sub .dsi{font-size:12px;}
+/* divider */
+.dr-sep{height:1px;background:var(--bdr);margin:8px 4px;}
+.dr-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);padding:10px 10px 4px;}
+/* footer */
+.drawer-foot{
+  padding:12px 14px;margin:6px 10px 12px;border-radius:9px;
   background:rgba(34,212,106,.06);border:1px solid rgba(34,212,106,.15);
-  display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2);
+  display:flex;align-items:center;gap:9px;font-size:12px;color:var(--tx3);flex-shrink:0;
 }
-.drawer-api .da-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
+.drawer-foot .da-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
 
 /* ══════════ HERO ══════════ */
 #hero{
@@ -506,8 +565,21 @@ img{max-width:100%;}
   .m-body{padding:20px 22px 28px;}
 }
 /* info panel */
-.m-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
-@media(max-width:400px){.m-stats{grid-template-columns:repeat(2,1fr);}}
+/* ── CLASSIFICAÇÃO INDICATIVA ── */
+.rat-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:5px;flex-shrink:0;
+  font-size:10px;font-weight:900;border:2px solid;
+}
+.rat-L  {color:var(--rat-l);border-color:var(--rat-l);background:rgba(34,212,106,.1);}
+.rat-10 {color:var(--rat-10);border-color:var(--rat-10);background:rgba(61,142,245,.1);}
+.rat-12 {color:var(--rat-12);border-color:var(--rat-12);background:rgba(232,184,75,.1);}
+.rat-14 {color:var(--rat-14);border-color:var(--rat-14);background:rgba(245,158,61,.1);}
+.rat-16 {color:var(--rat-16);border-color:var(--rat-16);background:rgba(245,108,61,.1);}
+.rat-18 {color:var(--rat-18);border-color:var(--rat-18);background:rgba(232,75,75,.1);}
+
+.m-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;}
+@media(min-width:480px){.m-stats{grid-template-columns:repeat(3,1fr);}}
 .m-stat{background:var(--surf);border-radius:8px;padding:10px 12px;}
 .m-stat-l{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:4px;}
 .m-stat-v{font-size:13px;font-weight:600;}
@@ -542,36 +614,103 @@ img{max-width:100%;}
 }
 .btn-tv:hover{background:#f5ca5f;}
 .tv-ep-name{font-size:11px;color:var(--tx3);margin-top:7px;font-style:italic;}
-/* server items */
+
+/* ── SOURCE-COLORED STREAM GROUPS (collapsible dropdown per source) ── */
+.src-group{border-radius:10px;overflow:hidden;margin-bottom:9px;border:1px solid;}
+.src-group-hd{
+  display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;
+  transition:filter .15s;user-select:none;
+}
+.src-group-hd:hover{filter:brightness(1.12);}
+.src-group-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.src-group-name{font-size:13px;font-weight:700;flex:1;}
+.src-group-count{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;
+  background:rgba(255,255,255,.14);
+}
+.src-group-arr{font-size:10px;opacity:.6;transition:transform .2s;flex-shrink:0;margin-left:4px;}
+.src-group.open .src-group-arr{transform:rotate(180deg);}
+.src-group-body{display:none;border-top:1px solid rgba(255,255,255,.07);}
+.src-group.open .src-group-body{display:block;}
+/* rows inside group */
 .srv-item{
-  display:flex;align-items:flex-start;gap:10px;
-  background:var(--surf);border:1px solid var(--bdr);border-radius:9px;
-  padding:11px 12px;margin-bottom:8px;transition:all .18s;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;transition:background .12s;
 }
-.srv-item:hover{background:var(--surf2);border-color:var(--bdr2);}
-.srv-ico{
-  width:32px;height:32px;border-radius:7px;flex-shrink:0;
-  background:rgba(61,142,245,.12);border:1px solid rgba(61,142,245,.2);
-  display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--blue);
-  margin-top:1px;
-}
+.srv-item:hover{background:rgba(255,255,255,.04);}
+.srv-num{font-size:10px;font-weight:700;color:var(--tx3);width:18px;text-align:right;flex-shrink:0;}
 .srv-info{flex:1;overflow:hidden;min-width:0;}
-.srv-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;}
-.srv-url{font-size:10px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;margin-bottom:6px;}
-.srv-acts{display:flex;gap:5px;flex-shrink:0;align-items:center;}
+.srv-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:1px;}
+.srv-url{font-size:10px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
+.srv-acts{display:flex;gap:5px;flex-shrink:0;}
 .btn-copy{
-  background:var(--surf2);border:1px solid var(--bdr2);color:var(--tx2);
+  background:rgba(255,255,255,.07);border:1px solid var(--bdr2);color:var(--tx2);
   font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;
-  padding:5px 9px;border-radius:6px;cursor:pointer;transition:all .18s;white-space:nowrap;
+  padding:4px 8px;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap;
 }
-.btn-copy:hover,.btn-copy.done{background:rgba(34,212,106,.1);border-color:rgba(34,212,106,.25);color:var(--green);}
+.btn-copy:hover,.btn-copy.done{background:rgba(34,212,106,.1);border-color:rgba(34,212,106,.3);color:var(--green);}
 .btn-open{
   background:var(--blue);color:#fff;font-family:'Outfit',sans-serif;
-  font-size:10px;font-weight:700;padding:5px 10px;border-radius:6px;
-  text-decoration:none;transition:background .18s;white-space:nowrap;
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:5px;
+  text-decoration:none;transition:background .15s;white-space:nowrap;
 }
 .btn-open:hover{background:var(--blue2);}
 .no-streams{text-align:center;padding:28px;color:var(--tx3);font-size:13px;}
+
+/* ── ABOUT MODAL ── */
+#aboutModal{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+#aboutModal.open{display:flex;animation:fadeIn .18s ease;}
+.about-box{
+  background:var(--bg2);border:1px solid var(--bdr2);border-radius:16px;
+  max-width:520px;width:100%;max-height:92dvh;overflow-y:auto;position:relative;
+  box-shadow:0 40px 100px rgba(0,0,0,.9);animation:popIn .24s ease;
+}
+.about-hero{
+  padding:24px 22px 18px;
+  background:linear-gradient(135deg,rgba(232,184,75,.07),rgba(240,112,48,.04));
+  border-bottom:1px solid var(--bdr);
+}
+.about-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.about-logo-mark{
+  width:44px;height:44px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),#f07030);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 6px 20px rgba(232,184,75,.3);
+}
+.about-logo-text{font-size:24px;font-weight:900;letter-spacing:-.5px;color:#fff;}
+.about-logo-ver{font-size:11px;color:var(--tx3);font-weight:600;margin-left:2px;align-self:flex-end;margin-bottom:3px;}
+.about-tagline{font-size:13px;color:var(--tx2);line-height:1.6;}
+.about-close{
+  position:absolute;top:12px;right:12px;
+  background:rgba(255,255,255,.07);border:1px solid var(--bdr2);border-radius:7px;
+  color:var(--tx2);font-size:13px;padding:5px 9px;cursor:pointer;line-height:1;transition:all .15s;
+}
+.about-close:hover{background:var(--red);color:#fff;border-color:transparent;}
+.about-body{padding:18px 22px 24px;}
+.about-sec{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px;}
+.about-how{display:flex;flex-direction:column;gap:9px;margin-bottom:20px;}
+.about-step{display:flex;align-items:flex-start;gap:11px;}
+.about-step-n{
+  width:24px;height:24px;border-radius:6px;flex-shrink:0;
+  background:var(--gold);color:#0a0a0a;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.about-step-t{font-size:13px;color:var(--tx2);line-height:1.55;padding-top:3px;}
+.about-step-t strong{color:var(--tx);}
+.about-sources{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+.about-src{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;border:1px solid;}
+.about-src-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.about-src-name{font-size:13px;font-weight:700;flex:1;}
+.about-src-url{font-size:11px;color:var(--tx3);}
+.about-rat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px;}
+@media(max-width:380px){.about-rat-grid{grid-template-columns:repeat(2,1fr);}}
+.about-rat-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surf);border-radius:8px;}
+.about-rat-desc{font-size:11px;color:var(--tx3);}
+.about-note{font-size:11px;color:var(--tx3);text-align:center;}
 
 /* ══════════ FOOTER ══════════ */
 footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
@@ -642,11 +781,53 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
     <span class="nav-logo-text">CineStream</span>
   </div>
   <div class="nav-links">
-    <button class="nav-link active" onclick="goHome()">Início</button>
-    <button class="nav-link" onclick="catClick('movie/popular','movie',null)">Filmes</button>
-    <button class="nav-link" onclick="catClick('tv/popular','tv',null)">Séries</button>
-    <button class="nav-link" onclick="catClick('movie/top_rated','movie',null)">Top Avaliados</button>
-    <button class="nav-link" onclick="catClick('movie/upcoming','movie',null)">Em Breve</button>
+    <!-- Início -->
+    <button class="nav-link active" id="nl-home" onclick="goHome()">Início</button>
+
+    <!-- Filmes dropdown -->
+    <div class="nav-item">
+      <button class="nav-link" id="nl-movies">Filmes <span class="nav-arr">▾</span></button>
+      <div class="nav-dd">
+        <div class="dd-label">Categorias</div>
+        <button class="dd-btn" onclick="catClick('movie/popular','movie',null)"><span class="ddi">🔥</span>Populares</button>
+        <button class="dd-btn" onclick="catClick('movie/top_rated','movie',null)"><span class="ddi">⭐</span>Mais Avaliados</button>
+        <button class="dd-btn" onclick="catClick('movie/now_playing','movie',null)"><span class="ddi">🎭</span>Em Cartaz</button>
+        <button class="dd-btn" onclick="catClick('movie/upcoming','movie',null)"><span class="ddi">🚀</span>Em Breve</button>
+        <div class="dd-sep"></div>
+        <div class="dd-label">Por Gênero</div>
+        <button class="dd-btn" onclick="advGenreShortcut('28','movie')"><span class="ddi">💥</span>Ação</button>
+        <button class="dd-btn" onclick="advGenreShortcut('16','movie')"><span class="ddi">🎨</span>Animação</button>
+        <button class="dd-btn" onclick="advGenreShortcut('35','movie')"><span class="ddi">😂</span>Comédia</button>
+        <button class="dd-btn" onclick="advGenreShortcut('27','movie')"><span class="ddi">👻</span>Terror</button>
+        <button class="dd-btn" onclick="advGenreShortcut('878','movie')"><span class="ddi">🚀</span>Ficção Científica</button>
+        <button class="dd-btn" onclick="advGenreShortcut('18','movie')"><span class="ddi">🎭</span>Drama</button>
+        <button class="dd-btn" onclick="advGenreShortcut('10749','movie')"><span class="ddi">💕</span>Romance</button>
+        <button class="dd-btn" onclick="advGenreShortcut('53','movie')"><span class="ddi">😱</span>Suspense</button>
+      </div>
+    </div>
+
+    <!-- Séries dropdown -->
+    <div class="nav-item">
+      <button class="nav-link" id="nl-tv">Séries <span class="nav-arr">▾</span></button>
+      <div class="nav-dd">
+        <div class="dd-label">Categorias</div>
+        <button class="dd-btn" onclick="catClick('tv/popular','tv',null)"><span class="ddi">📡</span>Populares</button>
+        <button class="dd-btn" onclick="catClick('tv/top_rated','tv',null)"><span class="ddi">🏆</span>Mais Avaliadas</button>
+        <button class="dd-btn" onclick="catClick('tv/on_the_air','tv',null)"><span class="ddi">📺</span>No Ar Agora</button>
+        <button class="dd-btn" onclick="catClick('tv/airing_today','tv',null)"><span class="ddi">🗓</span>Hoje</button>
+        <div class="dd-sep"></div>
+        <div class="dd-label">Por Gênero</div>
+        <button class="dd-btn" onclick="advGenreShortcut('10759','tv')"><span class="ddi">💥</span>Ação e Aventura</button>
+        <button class="dd-btn" onclick="advGenreShortcut('35','tv')"><span class="ddi">😂</span>Comédia</button>
+        <button class="dd-btn" onclick="advGenreShortcut('18','tv')"><span class="ddi">🎭</span>Drama</button>
+        <button class="dd-btn" onclick="advGenreShortcut('10765','tv')"><span class="ddi">🔮</span>Ficção/Fantasia</button>
+        <button class="dd-btn" onclick="advGenreShortcut('9648','tv')"><span class="ddi">🔍</span>Mistério</button>
+        <button class="dd-btn" onclick="advGenreShortcut('80','tv')"><span class="ddi">🔫</span>Crime</button>
+      </div>
+    </div>
+
+    <!-- Sobre -->
+    <button class="nav-link" onclick="openAbout()">Sobre</button>
   </div>
   <div class="nav-right">
     <div class="nav-api-dot"><span></span>API Ativa</div>
@@ -658,44 +839,75 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 <div id="drawer" onclick="if(event.target===this)closeDrawer()">
   <div class="drawer-panel">
     <div class="drawer-header">
-      <span class="drawer-logo">🎬 CineStream</span>
+      <div class="drawer-logo"><div class="drawer-logo-mark">🎬</div>CineStream</div>
       <button class="drawer-close" onclick="closeDrawer()">✕</button>
     </div>
-    <div class="drawer-section">
-      <div class="drawer-section-label">Navegação</div>
-      <button class="drawer-item active" id="di-home" onclick="goHome();closeDrawer()">
-        <span class="di-icon">🏠</span> Início
+    <div class="drawer-body">
+      <button class="dr-flat active" id="dr-home" onclick="goHome();closeDrawer()">
+        <span class="dfi">🏠</span>Início
       </button>
-      <button class="drawer-item" onclick="catClick('movie/popular','movie',null);closeDrawer()">
-        <span class="di-icon">🎬</span> Filmes Populares
-      </button>
-      <button class="drawer-item" onclick="catClick('tv/popular','tv',null);closeDrawer()">
-        <span class="di-icon">📺</span> Séries Populares
-      </button>
-      <button class="drawer-item" onclick="catClick('movie/top_rated','movie',null);closeDrawer()">
-        <span class="di-icon">⭐</span> Top Avaliados
-      </button>
-      <button class="drawer-item" onclick="catClick('movie/now_playing','movie',null);closeDrawer()">
-        <span class="di-icon">🎭</span> Em Cartaz
-      </button>
-      <button class="drawer-item" onclick="catClick('movie/upcoming','movie',null);closeDrawer()">
-        <span class="di-icon">🚀</span> Em Breve
-      </button>
-      <button class="drawer-item" onclick="catClick('tv/on_the_air','tv',null);closeDrawer()">
-        <span class="di-icon">📡</span> No Ar Agora
-      </button>
-      <button class="drawer-item" onclick="catClick('tv/top_rated','tv',null);closeDrawer()">
-        <span class="di-icon">🏆</span> Séries Top
-      </button>
-    </div>
-    <div class="drawer-divider"></div>
-    <div class="drawer-section">
-      <div class="drawer-section-label">Status</div>
+
+      <div class="dr-sep"></div>
+      <div class="dr-label">Filmes</div>
+
+      <!-- Filmes accordion -->
+      <div class="dr-acc">
+        <button class="dr-acc-hd" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="dfi">🎬</span>Categorias<span class="acc-arr">▾</span>
+        </button>
+        <div class="dr-acc-body">
+          <button class="dr-sub" onclick="catClick('movie/popular','movie',null);closeDrawer()"><span class="dsi">🔥</span>Populares</button>
+          <button class="dr-sub" onclick="catClick('movie/top_rated','movie',null);closeDrawer()"><span class="dsi">⭐</span>Mais Avaliados</button>
+          <button class="dr-sub" onclick="catClick('movie/now_playing','movie',null);closeDrawer()"><span class="dsi">🎭</span>Em Cartaz</button>
+          <button class="dr-sub" onclick="catClick('movie/upcoming','movie',null);closeDrawer()"><span class="dsi">🚀</span>Em Breve</button>
+        </div>
       </div>
-    <div class="drawer-api">
-      <span class="da-dot"></span>
-      <span>API TMDB Conectada</span>
-    </div>
+      <div class="dr-acc">
+        <button class="dr-acc-hd" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="dfi">🎞</span>Por Gênero<span class="acc-arr">▾</span>
+        </button>
+        <div class="dr-acc-body">
+          <button class="dr-sub" onclick="advGenreShortcut('28','movie');closeDrawer()"><span class="dsi">💥</span>Ação</button>
+          <button class="dr-sub" onclick="advGenreShortcut('35','movie');closeDrawer()"><span class="dsi">😂</span>Comédia</button>
+          <button class="dr-sub" onclick="advGenreShortcut('27','movie');closeDrawer()"><span class="dsi">👻</span>Terror</button>
+          <button class="dr-sub" onclick="advGenreShortcut('878','movie');closeDrawer()"><span class="dsi">🚀</span>Ficção Científica</button>
+          <button class="dr-sub" onclick="advGenreShortcut('18','movie');closeDrawer()"><span class="dsi">🎭</span>Drama</button>
+          <button class="dr-sub" onclick="advGenreShortcut('10749','movie');closeDrawer()"><span class="dsi">💕</span>Romance</button>
+        </div>
+      </div>
+
+      <div class="dr-sep"></div>
+      <div class="dr-label">Séries</div>
+
+      <div class="dr-acc">
+        <button class="dr-acc-hd" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="dfi">📺</span>Categorias<span class="acc-arr">▾</span>
+        </button>
+        <div class="dr-acc-body">
+          <button class="dr-sub" onclick="catClick('tv/popular','tv',null);closeDrawer()"><span class="dsi">📡</span>Populares</button>
+          <button class="dr-sub" onclick="catClick('tv/top_rated','tv',null);closeDrawer()"><span class="dsi">🏆</span>Mais Avaliadas</button>
+          <button class="dr-sub" onclick="catClick('tv/on_the_air','tv',null);closeDrawer()"><span class="dsi">📺</span>No Ar Agora</button>
+          <button class="dr-sub" onclick="catClick('tv/airing_today','tv',null);closeDrawer()"><span class="dsi">🗓</span>Hoje</button>
+        </div>
+      </div>
+      <div class="dr-acc">
+        <button class="dr-acc-hd" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="dfi">📡</span>Por Gênero<span class="acc-arr">▾</span>
+        </button>
+        <div class="dr-acc-body">
+          <button class="dr-sub" onclick="advGenreShortcut('10759','tv');closeDrawer()"><span class="dsi">💥</span>Ação e Aventura</button>
+          <button class="dr-sub" onclick="advGenreShortcut('35','tv');closeDrawer()"><span class="dsi">😂</span>Comédia</button>
+          <button class="dr-sub" onclick="advGenreShortcut('18','tv');closeDrawer()"><span class="dsi">🎭</span>Drama</button>
+          <button class="dr-sub" onclick="advGenreShortcut('10765','tv');closeDrawer()"><span class="dsi">🔮</span>Ficção/Fantasia</button>
+          <button class="dr-sub" onclick="advGenreShortcut('9648','tv');closeDrawer()"><span class="dsi">🔍</span>Mistério</button>
+          <button class="dr-sub" onclick="advGenreShortcut('80','tv');closeDrawer()"><span class="dsi">🔫</span>Crime</button>
+        </div>
+      </div>
+
+      <div class="dr-sep"></div>
+      <button class="dr-flat" onclick="openAbout();closeDrawer()"><span class="dfi">ℹ️</span>Sobre o CineStream</button>
+      </div>
+    <div class="drawer-foot"><span class="da-dot"></span>API TMDB Conectada</div>
   </div>
 </div>
 
@@ -867,7 +1079,7 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 
 <footer>
   <div class="ft-logo">🎬 CineStream</div>
-  <div class="ft-txt">Powered by Adonias · Stremio Sources</div>
+  <div class="ft-txt">CineStream © 2026 • Powered by TMDB & Stremio Sources • Developed by Adonias Almeida</div>
 </footer>
 
 <!-- ══ MODAL ══ -->
@@ -896,6 +1108,69 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
     <div class="m-body">
       <div class="m-panel on" id="mp-info"></div>
       <div class="m-panel" id="mp-streams"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT MODAL ══ -->
+<div id="aboutModal" onclick="if(event.target===this)closeAbout()">
+  <div class="about-box">
+    <button class="about-close" onclick="closeAbout()">✕</button>
+    <div class="about-hero">
+      <div class="about-logo-row">
+        <div class="about-logo-mark">🎬</div>
+        <span class="about-logo-text">CineStream</span>
+        <span class="about-logo-ver">v3.1</span>
+      </div>
+      <div class="about-tagline">Plataforma de busca e agregação de streams para filmes e séries. Utiliza a API do TMDB para metadados e fontes Stremio-compatíveis para os links de reprodução — tudo sem cadastro ou mensalidade.</div>
+    </div>
+    <div class="about-body">
+      <div class="about-sec">Como funciona</div>
+      <div class="about-how">
+        <div class="about-step"><div class="about-step-n">1</div><div class="about-step-t"><strong>Busque</strong> um filme ou série pelo nome, ou navegue pelas categorias e gêneros no menu.</div></div>
+        <div class="about-step"><div class="about-step-n">2</div><div class="about-step-t"><strong>O scanner</strong> consulta o TMDB para obter o ID IMDB e busca links simultâneos em todas as fontes.</div></div>
+        <div class="about-step"><div class="about-step-n">3</div><div class="about-step-t"><strong>Clique no card</strong> para ver os detalhes completos — informações, elenco, trailer e todos os servidores disponíveis organizados por fonte.</div></div>
+        <div class="about-step"><div class="about-step-n">4</div><div class="about-step-t"><strong>Exporte</strong> os links encontrados em formato M3U (compatível com VLC, Kodi, IPTV players) ou ZIP com os metadados.</div></div>
+      </div>
+
+      
+      <div class="about-sec">Fontes de Stream</div>
+      <div class="about-sources">
+        
+        <div class="about-src" style="background:var(--c-frost-bg);border-color:var(--c-frost-bdr);">
+  <div class="about-src-dot" style="background:var(--c-frost);"></div>
+  <div class="about-src-name" style="color:var(--c-frost);">FrostStream</div>
+  <div class="about-src-url">froststream.cloutteam.com</div>
+</div>
+        
+        <div class="about-src" style="background:var(--c-king-bg);border-color:var(--c-king-bdr);">
+          <div class="about-src-dot" style="background:var(--c-king);"></div>
+          <div class="about-src-name" style="color:var(--c-king);">King VOD</div>
+          <div class="about-src-url">kingvod.wasmer.app</div>
+        </div>
+        <div class="about-src" style="background:var(--c-mf-bg);border-color:var(--c-mf-bdr);">
+          <div class="about-src-dot" style="background:var(--c-mf);"></div>
+          <div class="about-src-name" style="color:var(--c-mf);">My-Filme</div>
+          <div class="about-src-url">my-filme-phi.vercel.app</div>
+        </div>
+        <div class="about-src" style="background:var(--c-fnx-bg);border-color:var(--c-fnx-bdr);">
+          <div class="about-src-dot" style="background:var(--c-fnx);"></div>
+          <div class="about-src-name" style="color:var(--c-fnx);">FenixFlix</div>
+          <div class="about-src-url">fenixflix-ur9u.onrender.com</div>
+        </div>
+      </div>
+
+      <div class="about-sec">Classificação Indicativa</div>
+      <div class="about-rat-grid">
+        <div class="about-rat-item"><span class="rat-badge rat-L">L</span><span class="about-rat-desc">Livre para todos</span></div>
+        <div class="about-rat-item"><span class="rat-badge rat-10">10</span><span class="about-rat-desc">Maior de 10 anos</span></div>
+        <div class="about-rat-item"><span class="rat-badge rat-12">12</span><span class="about-rat-desc">Maior de 12 anos</span></div>
+        <div class="about-rat-item"><span class="rat-badge rat-14">14</span><span class="about-rat-desc">Maior de 14 anos</span></div>
+        <div class="about-rat-item"><span class="rat-badge rat-16">16</span><span class="about-rat-desc">Maior de 16 anos</span></div>
+        <div class="about-rat-item"><span class="rat-badge rat-18">18</span><span class="about-rat-desc">Maior de 18 anos</span></div>
+      </div>
+
+      <div class="about-note">Para uso pessoal · Desenvolvido por Adonias · Dados: TMDB API</div>
     </div>
   </div>
 </div>
@@ -936,6 +1211,22 @@ function initScroll(){
 // ══ DRAWER ══
 function openDrawer(){document.getElementById('drawer').classList.add('open');document.body.style.overflow='hidden';}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.body.style.overflow='';}
+
+// ══ ABOUT ══
+function openAbout(){document.getElementById('aboutModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeAbout(){document.getElementById('aboutModal').classList.remove('open');document.body.style.overflow='';}
+
+// ══ GENRE SHORTCUT (from nav) ══
+function advGenreShortcut(genre,type){
+  setType(type);
+  document.getElementById('advGenre').value=genre;
+  document.getElementById('advSort').value='popularity.desc';
+  document.getElementById('advYearMin').value='';
+  document.getElementById('advYearMax').value='';
+  document.getElementById('advRating').value='';
+  doAdvSearch();
+  scrollMain();
+}
 
 // ══ HERO ══
 async function loadHero(){
@@ -1210,7 +1501,7 @@ async function processItem(it,type){
         votes:it.vote_count||0,
         genres:(detail.genres||[]).map(g=>g.name),
         runtime:detail.runtime||(detail.episode_run_time?.[0])||null,
-        status:detail.status||'',
+        status:detail.status||'',adult:detail.adult||false,
         cast:((detail.credits?.cast)||[]).slice(0,5).map(c=>c.name),
         trailerKey:tKey,imdb,type,seasons,tmdbId:it.id,currentSeason:1,currentEp:1,
       }
@@ -1334,8 +1625,22 @@ async function openBrowseModal(it,type){
   }catch(e){console.warn(e);}
 }
 
+// helpers
+function fmtRuntime(min){if(!min)return'—';const h=Math.floor(min/60),m=min%60;return h>0?(m>0?`${h}h ${m}min`:`${h}h`):`${m}min`;}
+function getRatingBadge(adult,genres){
+  // simple heuristic: adult flag, or genre "Terror"=16
+  if(adult)return{cls:'rat-18',label:'18'};
+  const g=(genres||[]).map(x=>x.toLowerCase());
+  if(g.some(x=>x.includes('terror')||x.includes('horror')))return{cls:'rat-16',label:'16'};
+  if(g.some(x=>x.includes('crime')||x.includes('suspense')||x.includes('thriller')))return{cls:'rat-14',label:'14'};
+  if(g.some(x=>x.includes('ação')||x.includes('acao')||x.includes('guerra')))return{cls:'rat-12',label:'12'};
+  if(g.some(x=>x.includes('animação')||x.includes('familia')||x.includes('família')))return{cls:'rat-L',label:'L'};
+  return{cls:'rat-12',label:'12'};
+}
+
 function buildInfoPanel(m){
-  const rt=m.runtime?m.runtime+' min':'—';
+  const rt=fmtRuntime(m.runtime);
+  const rb=getRatingBadge(m.adult,m.genres);
   const tvPick=m.type==='tv'?`<div class="tv-pick" id="ip-tv">
     <div class="tv-pick-l">Temporada / Episódio</div>
     <div class="tv-pick-row">
@@ -1345,14 +1650,13 @@ function buildInfoPanel(m){
     </div><div class="tv-ep-name"></div>
   </div>`:'';
   const trailer=m.trailerKey?`<a class="btn-trailer" href="https://www.youtube.com/watch?v=${m.trailerKey}" target="_blank" rel="noopener">▶ Ver Trailer</a>`:'';
+  // Stats: duração, status, IMDB, classificação — year/type/rating already in header
   document.getElementById('mp-info').innerHTML=`
     <div class="m-stats">
-      <div class="m-stat"><div class="m-stat-l">Tipo</div><div class="m-stat-v">${m.type==='tv'?'📺 Série':'🎬 Filme'}</div></div>
-      <div class="m-stat"><div class="m-stat-l">Ano</div><div class="m-stat-v">${m.year||'—'}</div></div>
-      <div class="m-stat"><div class="m-stat-l">Avaliação</div><div class="m-stat-v gold">${m.rating!=='-'?'⭐ '+m.rating:'—'}</div></div>
       <div class="m-stat"><div class="m-stat-l">Duração</div><div class="m-stat-v">${rt}</div></div>
       <div class="m-stat"><div class="m-stat-l">Status</div><div class="m-stat-v">${m.status||'—'}</div></div>
       <div class="m-stat"><div class="m-stat-l">IMDB</div><div class="m-stat-v">${m.imdb||'—'}</div></div>
+      <div class="m-stat"><div class="m-stat-l">Classificação</div><div class="m-stat-v"><span class="rat-badge ${rb.cls}">${rb.label}</span></div></div>
     </div>
     ${m.genres.length?`<div class="m-tags-row">${m.genres.map(g=>`<span class="m-tag">${g}</span>`).join('')}</div>`:''}
     ${m.cast.length?`<div class="m-cast"><strong>Elenco:</strong> ${m.cast.join(', ')}</div>`:''}
@@ -1383,24 +1687,68 @@ function buildStreamsPanel(entry){
   });
 }
 
+// ══ SOURCE CONFIG ══
+const SRC_CFG={
+  'FrostStream': {color:'var(--c-frost)', bg:'var(--c-frost-bg)', bdr:'var(--c-frost-bdr)', ico:'🟢'},
+  'King VOD': {color:'var(--c-king)',  bg:'var(--c-king-bg)',  bdr:'var(--c-king-bdr)',  ico:'🟠'},
+  'My-Filme':  {color:'var(--c-mf)',    bg:'var(--c-mf-bg)',    bdr:'var(--c-mf-bdr)',    ico:'🔵'},
+  'FenixFlix': {color:'var(--c-fnx)',   bg:'var(--c-fnx-bg)',   bdr:'var(--c-fnx-bdr)',   ico:'🟣'},
+};
+function srcCfg(name){return SRC_CFG[name]||{color:'var(--c-oth)',bg:'var(--c-oth-bg)',bdr:'var(--c-oth-bdr)',ico:'🟢'};}
+
 function renderSrvs(streams,id){
   const el=document.getElementById(id); if(!el) return;
-  el.querySelectorAll('.srv-item').forEach(e=>e.remove());
-  if(!streams.length){el.innerHTML=`<div class="no-streams">😞 Nenhum stream disponível.</div>`;return;}
-  streams.forEach((s,i)=>{
-    const url=s.url||s.externalUrl||'', name=s.title||s.name||`Servidor ${i+1}`, src=s._source||'';
-    const d=document.createElement('div'); d.className='srv-item';
-    d.innerHTML=`<div class="srv-ico">🔗</div>
-      <div class="srv-info">
-        <div class="srv-name">${name}${src?` <span style="font-size:9px;color:var(--tx3)">[${src}]</span>`:''}</div>
-        <span class="srv-url">${url||'(sem URL)'}</span>
-      </div>
-      <div class="srv-acts">
-        ${url?`<button class="btn-copy" data-url="${url.replace(/"/g,'&quot;')}">📋</button><a class="btn-open" href="${url}" target="_blank" rel="noopener">▶ Abrir</a>`:'<span style="font-size:10px;color:var(--tx3)">N/D</span>'}
-      </div>`;
-    const cb=d.querySelector('.btn-copy');
-    if(cb) cb.onclick=function(){copyUrl(this,this.dataset.url);};
-    el.appendChild(d);
+  el.innerHTML='';
+  if(!streams.length){el.innerHTML=`<div class="no-streams">😞 Nenhum stream disponível para este título ou episódio.</div>`;return;}
+
+  // group by source
+  const groups={};
+  streams.forEach(s=>{
+    const src=s._source||'Outro';
+    if(!groups[src]) groups[src]=[];
+    groups[src].push(s);
+  });
+
+  Object.entries(groups).forEach(([srcName,items],gi)=>{
+    const cfg=srcCfg(srcName);
+    const grp=document.createElement('div');
+    grp.className='src-group'+(gi===0?' open':'');
+    grp.style.borderColor=cfg.bdr;
+    grp.style.background=cfg.bg;
+
+    // header
+    const hd=document.createElement('div');
+    hd.className='src-group-hd';
+    hd.style.color=cfg.color;
+    hd.innerHTML=`<span style="font-size:16px">${cfg.ico}</span>
+      <span class="src-group-name">${srcName}</span>
+      <span class="src-group-count">${items.length} link${items.length!==1?'s':''}</span>
+      <span class="src-group-arr">▾</span>`;
+    hd.onclick=()=>grp.classList.toggle('open');
+    grp.appendChild(hd);
+
+    // body
+    const body=document.createElement('div');
+    body.className='src-group-body';
+    items.forEach((s,i)=>{
+      const url=s.url||s.externalUrl||'';
+      const name=s.title||s.name||`Link ${i+1}`;
+      const row=document.createElement('div');
+      row.className='srv-item';
+      row.innerHTML=`<span class="srv-num">${i+1}</span>
+        <div class="srv-info">
+          <div class="srv-name">${name}</div>
+          <span class="srv-url">${url||'(sem URL direta)'}</span>
+        </div>
+        <div class="srv-acts">
+          ${url?`<button class="btn-copy" data-url="${url.replace(/"/g,'&quot;')}">📋</button><a class="btn-open" href="${url}" target="_blank" rel="noopener">▶ Abrir</a>`:'<span style="font-size:10px;color:var(--tx3)">N/D</span>'}
+        </div>`;
+      const cb=row.querySelector('.btn-copy');
+      if(cb)cb.onclick=function(){copyUrl(this,this.dataset.url);};
+      body.appendChild(row);
+    });
+    grp.appendChild(body);
+    el.appendChild(grp);
   });
 }
 
