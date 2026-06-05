@@ -1712,7 +1712,7 @@ function renderSrvs(streams,id){
   Object.entries(groups).forEach(([srcName,items],gi)=>{
     const cfg=srcCfg(srcName);
     const grp=document.createElement('div');
-    grp.className='src-group'+(gi===0?' open':'');
+    grp.className='src-group';
     grp.style.borderColor=cfg.bdr;
     grp.style.background=cfg.bg;
 
