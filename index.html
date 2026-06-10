@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>CineStream</title>
+<title>CineStream ── Movies & TV Series Library</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -89,11 +89,17 @@ img{max-width:100%;}
 .nav-item:hover .nav-arr{transform:rotate(180deg);}
 /* dropdown */
 .nav-dd{
-  position:absolute;top:calc(100% + 8px);left:0;min-width:210px;
+  position:absolute;top:100%;left:0;min-width:210px;
   background:var(--bg2);border:1px solid var(--bdr2);border-radius:12px;
-  padding:6px;box-shadow:0 16px 48px rgba(0,0,0,.75);
-  pointer-events:none;opacity:0;transform:translateY(-6px);
+  padding:6px 6px 6px;box-shadow:0 16px 48px rgba(0,0,0,.75);
+  /* padding-top cria ponte invisível eliminando o gap de morte */
+  padding-top:14px;margin-top:0;
+  pointer-events:none;opacity:0;transform:translateY(-4px);
   transition:opacity .18s,transform .18s;z-index:500;
+}
+/* pseudo-element faz a ponte invisível entre botão e dropdown */
+.nav-dd::before{
+  content:'';position:absolute;top:-10px;left:0;right:0;height:10px;
 }
 .nav-item:hover .nav-dd{pointer-events:auto;opacity:1;transform:translateY(0);}
 .dd-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);padding:8px 10px 4px;}
@@ -1150,7 +1156,7 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         </div>
         <div class="about-src" style="background:var(--c-mf-bg);border-color:var(--c-mf-bdr);">
           <div class="about-src-dot" style="background:var(--c-mf);"></div>
-          <div class="about-src-name" style="color:var(--c-mf);">My-Filme</div>
+          <div class="about-src-name" style="color:var(--c-mf);">PopPlay</div>
           <div class="about-src-url">my-filme-phi.vercel.app</div>
         </div>
         <div class="about-src" style="background:var(--c-fnx-bg);border-color:var(--c-fnx-bdr);">
@@ -1179,9 +1185,9 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 // ══ CONFIG ══
 const TMDB = '0875f328e3fa25a394f9ad98ff1eaac2';
 const SOURCES = [
-  {name:'Froststream', origin:'https://froststream.cloutteam.com'},
+  {name:'FrostStream', origin:'https://froststream.cloutteam.com'},
   {name:'King VOD', origin:'https://kingvod.wasmer.app/index.php'},
-  {name:'My-Filme',    origin:'https://my-filme-phi.vercel.app'},
+  {name:'PopPlay',    origin:'https://my-filme-phi.vercel.app'},
   {name:'FenixFlix',  origin:'https://fenixflix-ur9u.onrender.com'},
 ];
 const PROXIES = [
@@ -1231,8 +1237,21 @@ function advGenreShortcut(genre,type){
 // ══ HERO ══
 async function loadHero(){
   try{
-    const d=await tmdbGet('movie/popular?language=pt-BR&page=1');
-    heroItems=(d.results||[]).slice(0,7);
+    // Carrega filmes E séries em paralelo, intercala no hero
+    const [dm,dt]=await Promise.all([
+      tmdbGet('movie/popular?language=pt-BR&page=1'),
+      tmdbGet('tv/popular?language=pt-BR&page=1'),
+    ]);
+    const movies=(dm.results||[]).slice(0,4).map(it=>({...it,_heroType:'movie'}));
+    const series=(dt.results||[]).slice(0,4).map(it=>({...it,_heroType:'tv'}));
+    // intercala filme/série alternadamente
+    heroItems=[];
+    const len=Math.max(movies.length,series.length);
+    for(let i=0;i<len;i++){
+      if(movies[i]) heroItems.push(movies[i]);
+      if(series[i]) heroItems.push(series[i]);
+    }
+    heroItems=heroItems.slice(0,7);
     buildHeroDots(); showHero(0);
     heroTimer=setInterval(()=>{heroIdx=(heroIdx+1)%heroItems.length;showHero(heroIdx);},7500);
   }catch(e){console.warn(e);}
@@ -1241,7 +1260,12 @@ function buildHeroDots(){
   const w=document.getElementById('heroDots'); w.innerHTML='';
   heroItems.forEach((_,i)=>{
     const d=document.createElement('div'); d.className='hd-dot'+(i===0?' on':'');
-    d.onclick=()=>{clearInterval(heroTimer);heroIdx=i;showHero(i);};
+    d.onclick=()=>{
+      clearInterval(heroTimer);
+      heroIdx=i; showHero(i);
+      // reinicia o timer após clique manual no dot
+      heroTimer=setInterval(()=>{heroIdx=(heroIdx+1)%heroItems.length;showHero(heroIdx);},7500);
+    };
     w.appendChild(d);
   });
 }
@@ -1249,30 +1273,37 @@ function showHero(idx){
   heroIdx=idx;
   document.querySelectorAll('.hd-dot').forEach((d,i)=>d.classList.toggle('on',i===idx));
   const it=heroItems[idx]; if(!it) return;
-  document.getElementById('heroTitle').textContent=it.title||it.name||'';
+  const type=it._heroType||'movie';
+  const title=type==='tv'?(it.name||it.title||''):(it.title||it.name||'');
+  document.getElementById('heroTitle').textContent=title;
   document.getElementById('heroOv').textContent=it.overview||'';
   const yr=(it.release_date||it.first_air_date||'').slice(0,4);
   const rt=it.vote_average?`⭐ ${it.vote_average.toFixed(1)}`:'';
+  const typeLabel=type==='tv'?'📺 Série':'🎬 Filme';
   document.getElementById('heroMeta').innerHTML=
     (rt?`<span class="hm-item gold">${rt}</span><span class="hm-dot"></span>`:'')
-    +(yr?`<span class="hm-item">📅 ${yr}</span>`:'')
-    +'<span class="hm-dot"></span><span class="hm-item">🎬 Filme</span>';
+    +(yr?`<span class="hm-item">📅 ${yr}</span><span class="hm-dot"></span>`:'')
+    +`<span class="hm-item">${typeLabel}</span>`;
   const bg=document.getElementById('heroBg');
   if(it.backdrop_path){
     const tmp=new Image();
     tmp.onload=()=>{bg.style.backgroundImage=`url(${tmp.src})`;bg.classList.add('on');};
     tmp.src=`https://image.tmdb.org/t/p/w1280${it.backdrop_path}`;
+  } else {
+    bg.style.backgroundImage='none';
+    bg.classList.remove('on');
   }
   const pc=document.getElementById('heroPosterCol'), pi=document.getElementById('heroPosterImg');
   if(it.poster_path){pi.src=`https://image.tmdb.org/t/p/w342${it.poster_path}`;pc.style.display='';}
   else pc.style.display='none';
 }
-function heroPlay(){const it=heroItems[heroIdx];if(!it)return;document.getElementById('searchInput').value=it.title||it.name||'';setType('movie');doSearch();scrollMain();}
+function heroPlay(){const it=heroItems[heroIdx];if(!it)return;const type=it._heroType||'movie';document.getElementById('searchInput').value=it.title||it.name||'';setType(type);doSearch();scrollMain();}
 
 function heroInfo(){
   const it=heroItems[heroIdx];
   if(!it)return;
-  openBrowseModal(it,'movie');
+  // usa o tipo correto gravado em _heroType ao carregar
+  openBrowseModal(it,it._heroType||'movie');
 }
 
 function scrollMain(){document.getElementById('main').scrollIntoView({behavior:'smooth'});}
@@ -1479,9 +1510,10 @@ async function doAdvSearch(){
 
 async function processItem(it,type){
   try{
+    const certEndpoint=type==='movie'?'release_dates':'content_ratings';
     const [ids,detail]=await Promise.all([
       fetch(`https://api.themoviedb.org/3/${type}/${it.id}/external_ids?api_key=${TMDB}`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/${type}/${it.id}?api_key=${TMDB}&language=pt-BR&append_to_response=credits,videos`).then(r=>r.json())
+      fetch(`https://api.themoviedb.org/3/${type}/${it.id}?api_key=${TMDB}&language=pt-BR&append_to_response=credits,videos,${certEndpoint}`).then(r=>r.json())
     ]);
     const imdb=ids.imdb_id; if(!imdb) return;
     const path=type==='movie'?`/stream/movie/${imdb}.json`:`/stream/series/${imdb}:1:1.json`;
@@ -1489,6 +1521,10 @@ async function processItem(it,type){
     const videos=(detail.videos?.results||[]);
     const tKey=(videos.find(v=>v.site==='YouTube'&&v.type==='Trailer')||videos.find(v=>v.site==='YouTube')||{}).key||null;
     const seasons=type==='tv'?(detail.seasons||[]).filter(s=>s.season_number>0):[];
+    // resolve classificação BR a partir dos dados já embutidos no detail
+    const certBR=parseCertFromDetail(detail,type);
+    const genreNames=(detail.genres||[]).map(g=>g.name);
+    const rb=certBR?certToBadge(certBR):getRatingBadge(detail.adult||false,genreNames);
     const entry={
       streams,
       _meta:{
@@ -1499,11 +1535,12 @@ async function processItem(it,type){
         year:(it.release_date||it.first_air_date||'').slice(0,4),
         rating:it.vote_average?it.vote_average.toFixed(1):'-',
         votes:it.vote_count||0,
-        genres:(detail.genres||[]).map(g=>g.name),
+        genres:genreNames,
         runtime:detail.runtime||(detail.episode_run_time?.[0])||null,
         status:detail.status||'',adult:detail.adult||false,
         cast:((detail.credits?.cast)||[]).slice(0,5).map(c=>c.name),
         trailerKey:tKey,imdb,type,seasons,tmdbId:it.id,currentSeason:1,currentEp:1,
+        certBadge:rb,
       }
     };
     found.push(entry);
@@ -1584,25 +1621,30 @@ async function openBrowseModal(it,type){
   document.getElementById('mp-info').innerHTML=`<div style="text-align:center;padding:32px;color:var(--tx3)">Carregando...</div>`;
   document.getElementById('mp-streams').innerHTML='';
   try{
+    const certEndpoint2=type==='movie'?'release_dates':'content_ratings';
     const [ids,detail]=await Promise.all([
       fetch(`https://api.themoviedb.org/3/${type}/${it.id}/external_ids?api_key=${TMDB}`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/${type}/${it.id}?api_key=${TMDB}&language=pt-BR&append_to_response=credits,videos`).then(r=>r.json())
+      fetch(`https://api.themoviedb.org/3/${type}/${it.id}?api_key=${TMDB}&language=pt-BR&append_to_response=credits,videos,${certEndpoint2}`).then(r=>r.json())
     ]);
     const imdb=ids.imdb_id;
     const videos=(detail.videos?.results||[]);
+    const browseGenres=(detail.genres||[]).map(g=>g.name);
+    const browseCertBR=parseCertFromDetail(detail,type);
+    const browseRb=browseCertBR?certToBadge(browseCertBR):getRatingBadge(detail.adult||false,browseGenres);
     const m={
       title:it.title||it.name||'',
       poster:it.poster_path?`https://image.tmdb.org/t/p/w500${it.poster_path}`:'',
       heroImg:it.backdrop_path?`https://image.tmdb.org/t/p/w780${it.backdrop_path}`:'',
       overview:detail.overview||'',year:(it.release_date||it.first_air_date||'').slice(0,4),
       rating:it.vote_average?it.vote_average.toFixed(1):'-',votes:it.vote_count||0,
-      genres:(detail.genres||[]).map(g=>g.name),
+      genres:browseGenres,
       runtime:detail.runtime||(detail.episode_run_time?.[0])||null,
-      status:detail.status||'',
+      status:detail.status||'',adult:detail.adult||false,
       cast:((detail.credits?.cast)||[]).slice(0,5).map(c=>c.name),
       trailerKey:(videos.find(v=>v.site==='YouTube'&&v.type==='Trailer')||{}).key||null,
       imdb,type,seasons:type==='tv'?(detail.seasons||[]).filter(s=>s.season_number>0):[],
       tmdbId:it.id,currentSeason:1,currentEp:1,
+      certBadge:browseRb,
     };
     buildInfoPanel(m);
     // update poster + meta in modal
@@ -1611,13 +1653,14 @@ async function openBrowseModal(it,type){
     document.getElementById('mMetaRow').innerHTML=
       (m.rating!=='-'?`<span class="m-rating">⭐ ${m.rating}</span>`:'')
       +(m.year?`<span class="m-tag">📅 ${m.year}</span>`:'')
+      +`<span class="m-tag">${type==='tv'?'📺 Série':'🎬 Filme'}</span>`
       +(m.genres.slice(0,2).map(g=>`<span class="m-tag">${g}</span>`).join(''));
     if(imdb){
       document.getElementById('mp-streams').innerHTML=`<div style="text-align:center;padding:24px;color:var(--tx3)">Buscando streams...</div>`;
       const path=type==='movie'?`/stream/movie/${imdb}.json`:`/stream/series/${imdb}:1:1.json`;
       const streams=await fetchAll(path);
       const fakeEntry={streams,_meta:m};
-      modalIdx=-99; found[-99]=fakeEntry;
+      // guarda fakeEntry local, sem poluir o array found com índice negativo
       buildStreamsPanel(fakeEntry);
     } else {
       document.getElementById('mp-streams').innerHTML=`<div class="no-streams">IMDB ID não encontrado.</div>`;
@@ -1627,20 +1670,96 @@ async function openBrowseModal(it,type){
 
 // helpers
 function fmtRuntime(min){if(!min)return'—';const h=Math.floor(min/60),m=min%60;return h>0?(m>0?`${h}h ${m}min`:`${h}h`):`${m}min`;}
-function getRatingBadge(adult,genres){
-  // simple heuristic: adult flag, or genre "Terror"=16
-  if(adult)return{cls:'rat-18',label:'18'};
+// ── CLASSIFICAÇÃO INDICATIVA ─────────────────────────────────────────────
+// Busca a certificação oficial brasileira da TMDB.
+// Filmes: /release_dates  → iso_3166_1=='BR' → release_dates[].certification
+// Séries: /content_ratings → iso_3166_1=='BR' → .rating
+// Fallback 1: certificação US mapeada para equivalente BR
+// Fallback 2: heurística por gênero (última opção)
+
+const BR_VALID = new Set(['L','10','12','14','16','18']);
+
+// Mapa MPAA (US) → classificação BR equivalente
+const MPAA_TO_BR = {'G':'L','PG':'10','PG-13':'14','R':'16','NC-17':'18','NR':'12','TV-Y':'L','TV-Y7':'10','TV-G':'L','TV-PG':'12','TV-14':'14','TV-MA':'18'};
+
+async function fetchBRCert(tmdbId, type){
+  try{
+    if(type==='movie'){
+      const d = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/release_dates?api_key=${TMDB}`).then(r=>r.json());
+      const results = d.results||[];
+      // tenta BR primeiro
+      const br = results.find(r=>r.iso_3166_1==='BR');
+      if(br){
+        const cert = (br.release_dates||[]).map(x=>x.certification).find(c=>c && BR_VALID.has(c));
+        if(cert) return cert;
+      }
+      // fallback: US com mapeamento MPAA→BR
+      const us = results.find(r=>r.iso_3166_1==='US');
+      if(us){
+        const usCert = (us.release_dates||[]).map(x=>x.certification).find(c=>c);
+        if(usCert && MPAA_TO_BR[usCert]) return MPAA_TO_BR[usCert];
+      }
+    } else {
+      const d = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId}/content_ratings?api_key=${TMDB}`).then(r=>r.json());
+      const results = d.results||[];
+      const br = results.find(r=>r.iso_3166_1==='BR');
+      if(br && br.rating && BR_VALID.has(br.rating)) return br.rating;
+      // fallback US
+      const us = results.find(r=>r.iso_3166_1==='US');
+      if(us && us.rating && MPAA_TO_BR[us.rating]) return MPAA_TO_BR[us.rating];
+    }
+  }catch(_){}
+  return null; // retorna null para acionar fallback por gênero
+}
+
+function getRatingBadge(adult, genres){
+  // heurística usada apenas quando a API não retornou certificação
+  if(adult) return {cls:'rat-18',label:'18'};
   const g=(genres||[]).map(x=>x.toLowerCase());
-  if(g.some(x=>x.includes('terror')||x.includes('horror')))return{cls:'rat-16',label:'16'};
-  if(g.some(x=>x.includes('crime')||x.includes('suspense')||x.includes('thriller')))return{cls:'rat-14',label:'14'};
-  if(g.some(x=>x.includes('ação')||x.includes('acao')||x.includes('guerra')))return{cls:'rat-12',label:'12'};
-  if(g.some(x=>x.includes('animação')||x.includes('familia')||x.includes('família')))return{cls:'rat-L',label:'L'};
+  if(g.some(x=>x.includes('terror')||x.includes('horror')))     return{cls:'rat-16',label:'16'};
+  if(g.some(x=>x.includes('crime')||x.includes('guerra')))      return{cls:'rat-14',label:'14'};
+  if(g.some(x=>x.includes('suspense')||x.includes('thriller'))) return{cls:'rat-14',label:'14'};
+  if(g.some(x=>x.includes('ação')||x.includes('acao')))         return{cls:'rat-12',label:'12'};
+  if(g.some(x=>x.includes('animação')||x.includes('animation')))return{cls:'rat-10',label:'10'};
+  if(g.some(x=>x.includes('família')||x.includes('familia')))   return{cls:'rat-L', label:'L'};
+  if(g.some(x=>x.includes('document')))                         return{cls:'rat-L', label:'L'};
   return{cls:'rat-12',label:'12'};
+}
+
+function certToBadge(cert){
+  const map={'L':'rat-L','10':'rat-10','12':'rat-12','14':'rat-14','16':'rat-16','18':'rat-18'};
+  return{cls:map[cert]||'rat-12',label:cert||'12'};
+}
+
+function parseCertFromDetail(detail, type){
+  try{
+    if(type==='movie'){
+      const results=(detail.release_dates||{}).results||[];
+      const br=results.find(r=>r.iso_3166_1==='BR');
+      if(br){
+        const c=(br.release_dates||[]).map(x=>x.certification).find(c=>c&&BR_VALID.has(c));
+        if(c) return c;
+      }
+      const us=results.find(r=>r.iso_3166_1==='US');
+      if(us){
+        const uc=(us.release_dates||[]).map(x=>x.certification).find(c=>c);
+        if(uc&&MPAA_TO_BR[uc]) return MPAA_TO_BR[uc];
+      }
+    } else {
+      const results=(detail.content_ratings||{}).results||[];
+      const br=results.find(r=>r.iso_3166_1==='BR');
+      if(br&&br.rating&&BR_VALID.has(br.rating)) return br.rating;
+      const us=results.find(r=>r.iso_3166_1==='US');
+      if(us&&us.rating&&MPAA_TO_BR[us.rating]) return MPAA_TO_BR[us.rating];
+    }
+  }catch(_){}
+  return null;
 }
 
 function buildInfoPanel(m){
   const rt=fmtRuntime(m.runtime);
-  const rb=getRatingBadge(m.adult,m.genres);
+  // usa certBadge resolvido pela API; fallback para heurística se ausente
+  const rb=m.certBadge||getRatingBadge(m.adult,m.genres);
   const tvPick=m.type==='tv'?`<div class="tv-pick" id="ip-tv">
     <div class="tv-pick-l">Temporada / Episódio</div>
     <div class="tv-pick-row">
@@ -1691,7 +1810,7 @@ function buildStreamsPanel(entry){
 const SRC_CFG={
   'FrostStream': {color:'var(--c-frost)', bg:'var(--c-frost-bg)', bdr:'var(--c-frost-bdr)', ico:'🟢'},
   'King VOD': {color:'var(--c-king)',  bg:'var(--c-king-bg)',  bdr:'var(--c-king-bdr)',  ico:'🟠'},
-  'My-Filme':  {color:'var(--c-mf)',    bg:'var(--c-mf-bg)',    bdr:'var(--c-mf-bdr)',    ico:'🔵'},
+  'PopPlay':  {color:'var(--c-mf)',    bg:'var(--c-mf-bg)',    bdr:'var(--c-mf-bdr)',    ico:'🔵'},
   'FenixFlix': {color:'var(--c-fnx)',   bg:'var(--c-fnx-bg)',   bdr:'var(--c-fnx-bdr)',   ico:'🟣'},
 };
 function srcCfg(name){return SRC_CFG[name]||{color:'var(--c-oth)',bg:'var(--c-oth-bg)',bdr:'var(--c-oth-bdr)',ico:'🟢'};}
