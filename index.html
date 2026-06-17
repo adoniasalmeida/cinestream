@@ -507,9 +507,11 @@ img{max-width:100%;}
 /* skeletons */
 .skel-card{flex-shrink:0;width:145px;border-radius:var(--r);overflow:hidden;background:var(--surf);}
 .skel{background:linear-gradient(90deg,var(--surf) 0%,var(--surf2) 50%,var(--surf) 100%);background-size:600px 100%;animation:shimmer 1.4s infinite;}
-.skel-poster{aspect-ratio:2/3;}
+.skel-poster{aspect-ratio:2/3;width:100%;}
 .skel-line{height:11px;border-radius:4px;margin:10px 10px 5px;}
 .skel-line.s{width:55%;height:9px;}
+/* skeleton com mesma largura do card real */
+.car .skel-card{width:145px;}
 
 /* load more */
 .load-more{text-align:center;margin-top:28px;}
@@ -538,7 +540,9 @@ img{max-width:100%;}
   background:var(--bg2);border:1px solid var(--bdr2);
   border-radius:16px;overflow:hidden;overflow-y:auto;position:relative;
   box-shadow:0 40px 120px rgba(0,0,0,.9);animation:popIn .28s ease;
+  touch-action:pan-y;
 }
+
 /* hero area with poster */
 .m-hero{position:relative;width:100%;height:clamp(180px,38vw,280px);background:var(--bg3);overflow:hidden;}
 .m-hero-img{width:100%;height:100%;object-fit:cover;display:block;object-position:center 25%;}
@@ -705,17 +709,32 @@ img{max-width:100%;}
   border:1px solid rgba(255,255,255,.15);
   pointer-events:none;z-index:2;
 }
+/* logo do título sobre o backdrop */
+.trailer-logo-wrap{
+  position:absolute;bottom:16px;left:16px;
+  pointer-events:none;z-index:3;
+}
+.trailer-logo-wrap img{
+  max-width:min(160px,38%);max-height:52px;
+  object-fit:contain;display:block;
+  filter:drop-shadow(0 2px 12px rgba(0,0,0,.95));
+}
 .trailer-play{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;
+  pointer-events:none;z-index:4;
 }
 .trailer-play-btn{
-  width:64px;height:64px;border-radius:50%;
-  background:rgba(255,0,0,.92);display:flex;align-items:center;justify-content:center;
-  font-size:26px;color:#fff;transition:transform .2s,background .2s;
-  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(0,0,0,.55);border:2.5px solid rgba(255,255,255,.85);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:#fff;transition:transform .2s,background .2s,border-color .2s;
+  box-shadow:0 4px 20px rgba(0,0,0,.6);
 }
-.trailer-wrap:hover .trailer-play-btn{transform:scale(1.12);background:#ff0000;}
+.trailer-wrap:hover .trailer-play-btn{
+  transform:scale(1.1);
+  background:rgba(255,0,0,.85);
+  border-color:transparent;
+}
 .trailer-frame{
   position:absolute;inset:0;width:100%;height:100%;
   border:none;display:block;border-radius:12px;
@@ -746,28 +765,40 @@ img{max-width:100%;}
   box-shadow:0 40px 100px rgba(0,0,0,.9);animation:popIn .24s ease;
 }
 .about-hero{
-  padding:24px 22px 18px;
-  background:linear-gradient(135deg,rgba(232,184,75,.07),rgba(240,112,48,.04));
+  padding:32px 24px 22px;
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(232,184,75,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 100%, rgba(61,142,245,.06) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
   border-bottom:1px solid var(--bdr);
 }
-.about-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.about-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .about-logo-mark{
-  width:44px;height:44px;border-radius:11px;flex-shrink:0;
+  width:46px;height:46px;border-radius:12px;flex-shrink:0;
   background:linear-gradient(135deg,var(--gold),#f07030);
   display:flex;align-items:center;justify-content:center;font-size:22px;
-  box-shadow:0 6px 20px rgba(232,184,75,.3);
+  box-shadow:0 6px 22px rgba(232,184,75,.35);
 }
-.about-logo-text{font-size:24px;font-weight:900;letter-spacing:-.5px;color:#fff;}
-.about-logo-ver{font-size:11px;color:var(--tx3);font-weight:600;margin-left:2px;align-self:flex-end;margin-bottom:3px;}
-.about-tagline{font-size:13px;color:var(--tx2);line-height:1.6;}
+.about-logo-text{font-size:22px;font-weight:900;letter-spacing:-.5px;color:var(--tx);}
+.about-logo-ver{
+  font-size:11px;font-weight:700;
+  background:rgba(232,184,75,.12);border:1px solid rgba(232,184,75,.28);
+  color:var(--gold);padding:3px 9px;border-radius:10px;margin-left:2px;
+}
+.about-tagline{font-size:13px;color:var(--tx2);line-height:1.65;}
 .about-close{
   position:absolute;top:12px;right:12px;
   background:rgba(255,255,255,.07);border:1px solid var(--bdr2);border-radius:7px;
   color:var(--tx2);font-size:13px;padding:5px 9px;cursor:pointer;line-height:1;transition:all .15s;
 }
 .about-close:hover{background:var(--red);color:#fff;border-color:transparent;}
-.about-body{padding:18px 22px 24px;}
-.about-sec{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px;}
+.about-body{padding:18px 22px 26px;}
+.about-sec{
+  font-size:10px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--tx3);
+  margin:22px 0 10px;display:flex;align-items:center;gap:8px;
+}
+.about-sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
 .about-how{display:flex;flex-direction:column;gap:9px;margin-bottom:20px;}
 .about-step{display:flex;align-items:flex-start;gap:11px;}
 .about-step-n{
@@ -786,7 +817,58 @@ img{max-width:100%;}
 @media(max-width:380px){.about-rat-grid{grid-template-columns:repeat(2,1fr);}}
 .about-rat-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surf);border-radius:8px;}
 .about-rat-desc{font-size:11px;color:var(--tx3);}
-.about-note{font-size:11px;color:var(--tx3);text-align:center;}
+.about-note{
+  font-size:11px;color:var(--tx3);text-align:center;
+  margin-top:20px;padding-top:16px;border-top:1px solid var(--bdr);
+}
+/* ── about redesign ── */
+.about-powered{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;
+}
+.about-powered-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:11px;
+  padding:11px 16px;flex:1;min-width:140px;
+  transition:border-color .2s;
+}
+.about-powered-item:hover{border-color:var(--bdr3);}
+.about-powered-item img{
+  height:24px;width:auto;max-width:80px;object-fit:contain;
+  flex-shrink:0;
+}
+.about-powered-item span{font-size:11px;color:var(--tx3);line-height:1.4;}
+/* streaming grid */
+.about-streaming-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+  gap:8px;
+}
+.about-stream-item{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:var(--surf);border:1px solid var(--bdr);border-radius:11px;
+  padding:16px 10px 12px;transition:border-color .2s,background .2s;
+  cursor:default;
+}
+.about-stream-item:hover{border-color:var(--bdr2);background:var(--surf2);}
+.about-stream-item img{
+  height:26px;width:auto;max-width:84px;object-fit:contain;
+  filter:brightness(.8) saturate(.8);transition:filter .2s;
+}
+.about-stream-item:hover img{filter:brightness(1) saturate(1);}
+.about-stream-item span{
+  font-size:10px;color:var(--tx3);font-weight:600;
+  letter-spacing:.3px;text-align:center;
+}
+/* sources */
+.about-src{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;border:1px solid;
+  transition:opacity .2s;
+}
+.about-src:hover{opacity:.85;}
+.about-src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.about-src-name{font-size:13px;font-weight:700;flex:1;}
+.about-src-url{font-size:11px;color:var(--tx3);font-family:monospace;}
 
 /* ══════════ FOOTER ══════════ */
 footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
@@ -833,44 +915,6 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
   .car .card{width:165px;}
   .skel-card{width:165px;}
 }
-/* ══ PAINEL DE CONFIGURAÇÕES ══ */
-#cfgModal{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.88);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:16px;}
-#cfgModal.open{display:flex;}
-.cfg-box{width:100%;max-width:680px;max-height:94dvh;overflow-y:auto;background:var(--bg2);border:1px solid var(--bdr2);border-radius:16px;box-shadow:0 40px 120px rgba(0,0,0,.9);position:relative;animation:popIn .25s ease;}
-.cfg-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--bg2);z-index:5;}
-.cfg-title{font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;}
-.cfg-close{background:rgba(255,255,255,.07);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx2);font-size:15px;padding:6px 11px;cursor:pointer;transition:all .18s;}
-.cfg-close:hover{background:var(--red);color:#fff;border-color:transparent;}
-.cfg-body{padding:20px 22px 8px;display:flex;flex-direction:column;gap:22px;}
-.cfg-section{display:flex;flex-direction:column;gap:10px;}
-.cfg-sec-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);padding-bottom:8px;border-bottom:1px solid var(--bdr);}
-.cfg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.cfg-label{font-size:13px;font-weight:600;color:var(--tx2);min-width:110px;flex-shrink:0;}
-.cfg-inp{flex:1;min-width:160px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-family:'Outfit',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s;}
-.cfg-inp:focus{border-color:rgba(232,184,75,.5);}
-.cfg-inp.mono{font-family:monospace;font-size:12px;}
-.cfg-sources{display:flex;flex-direction:column;gap:6px;}
-.cfg-src-item{display:flex;align-items:center;gap:8px;background:var(--surf);border:1.5px solid var(--bdr2);border-radius:9px;padding:9px 12px;cursor:grab;transition:all .18s;user-select:none;}
-.cfg-src-item.dragging{opacity:.35;border-style:dashed;}
-.cfg-src-item.drag-over{border-color:var(--gold);background:rgba(232,184,75,.07);}
-.cfg-src-handle{color:var(--tx3);font-size:16px;flex-shrink:0;cursor:grab;}
-.cfg-src-enabled{width:16px;height:16px;accent-color:var(--green);cursor:pointer;flex-shrink:0;}
-.cfg-src-name-inp{flex:1;min-width:80px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:7px;color:var(--tx);font-family:'Outfit',sans-serif;font-size:12px;padding:6px 9px;outline:none;}
-.cfg-src-url-inp{flex:2;min-width:120px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:7px;color:var(--tx);font-family:monospace;font-size:11px;padding:6px 9px;outline:none;}
-.cfg-src-del{background:transparent;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:5px;transition:color .15s;flex-shrink:0;}
-.cfg-src-del:hover{color:var(--red);}
-.cfg-add-src{background:transparent;border:1.5px dashed var(--bdr2);border-radius:9px;color:var(--tx3);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;padding:10px;cursor:pointer;transition:all .2s;width:100%;margin-top:2px;}
-.cfg-add-src:hover{border-color:var(--gold);color:var(--gold);}
-.cfg-toggle-row{display:flex;gap:8px;flex-wrap:wrap;}
-.cfg-tog-btn{background:var(--surf);border:1px solid var(--bdr2);border-radius:20px;color:var(--tx3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:7px 15px;cursor:pointer;transition:all .2s;}
-.cfg-tog-btn.on{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
-.cfg-footer{display:flex;gap:8px;padding:16px 22px 22px;justify-content:flex-end;border-top:1px solid var(--bdr);margin-top:4px;}
-.btn-cfg-save{background:var(--gold);color:#0a0a0a;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;padding:11px 28px;border:none;border-radius:9px;cursor:pointer;}
-.btn-cfg-save:hover{background:#f5ca5f;}
-.btn-cfg-reset{background:transparent;border:1px solid var(--bdr2);color:var(--tx2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;padding:11px 18px;border-radius:9px;cursor:pointer;}
-.btn-cfg-reset:hover{color:var(--tx);background:var(--surf2);}
-.cfg-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:#0a0a0a;font-weight:700;font-size:13px;padding:10px 24px;border-radius:20px;z-index:900;opacity:0;transition:all .3s;pointer-events:none;}
-.cfg-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media(max-width:899px){
   .nav-links{display:none;}
@@ -1020,23 +1064,6 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         </div>
       </div>
 
-      <div class="dr-sep"></div>
-      <div class="dr-label">Streaming</div>
-
-      <div class="dr-acc">
-        <button class="dr-acc-hd" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-          <span class="dfi">📡</span>Plataformas<span class="acc-arr">▾</span>
-        </button>
-        <div class="dr-acc-body">
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=8&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=50');closeDrawer()"><span class="dsi">▶</span>Netflix</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=1899&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=50');closeDrawer()"><span class="dsi">▶</span>HBO Max</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=337&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=30');closeDrawer()"><span class="dsi">▶</span>Disney+</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=119&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=50');closeDrawer()"><span class="dsi">▶</span>Prime Video</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=350&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=20');closeDrawer()"><span class="dsi">▶</span>Apple TV+</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=531&sort_by=popularity.desc&with_original_language=en%7Cpt&region=BR&watch_region=BR&vote_count.gte=20');closeDrawer()"><span class="dsi">▶</span>Paramount+</button>
-          <button class="dr-sub" onclick="catClick('discover/movie','movie',null,'with_watch_providers=307&sort_by=popularity.desc&with_original_language=pt&region=BR&watch_region=BR&vote_count.gte=10');closeDrawer()"><span class="dsi">▶</span>Globoplay</button>
-        </div>
-      </div>
 
       <div class="dr-sep"></div>
       <button class="dr-flat" onclick="openAbout();closeDrawer()"><span class="dfi">ℹ️</span>Sobre o CineStream</button>
@@ -1204,7 +1231,7 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 
 <!-- ══ MODAL ══ -->
 <div id="modal" class="modal-ov" style="display:none" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
+  <div class="modal-box" id="modalBox">
     <div class="m-hero" id="mHero">
       <img id="mHeroImg" src="" alt="" class="m-hero-img" style="display:none">
       <div class="m-hero-grad"></div>
@@ -1236,33 +1263,67 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 <div id="aboutModal" onclick="if(event.target===this)closeAbout()">
   <div class="about-box">
     <button class="about-close" onclick="closeAbout()">✕</button>
+
+    <!-- HERO -->
     <div class="about-hero">
       <div class="about-logo-row">
         <div class="about-logo-mark">🎬</div>
         <span class="about-logo-text">CineStream</span>
-        <span class="about-logo-ver">v3.1</span>
+        <span class="about-logo-ver">v4.0</span>
       </div>
-      <div class="about-tagline">Plataforma de busca e agregação de streams para filmes e séries. Utiliza a API do TMDB para metadados e fontes Stremio-compatíveis para os links de reprodução — tudo sem cadastro ou mensalidade.</div>
+      <div class="about-tagline">
+        Sua biblioteca pessoal de filmes e séries. Navegue pelo catálogo completo com metadados do TMDB, descubra trailers, informações de elenco e acesse links de reprodução de múltiplas fontes compatíveis com Stremio e Nuvio — tudo em um único lugar, sem cadastro.
+      </div>
     </div>
+
     <div class="about-body">
+
+      <!-- COMO FUNCIONA -->
       <div class="about-sec">Como funciona</div>
       <div class="about-how">
-        <div class="about-step"><div class="about-step-n">1</div><div class="about-step-t"><strong>Busque</strong> um filme ou série pelo nome, ou navegue pelas categorias e gêneros no menu.</div></div>
-        <div class="about-step"><div class="about-step-n">2</div><div class="about-step-t"><strong>O scanner</strong> consulta o TMDB para obter o ID IMDB e busca links simultâneos em todas as fontes.</div></div>
-        <div class="about-step"><div class="about-step-n">3</div><div class="about-step-t"><strong>Clique no card</strong> para ver os detalhes completos — informações, elenco, trailer e todos os servidores disponíveis organizados por fonte.</div></div>
-        <div class="about-step"><div class="about-step-n">4</div><div class="about-step-t"><strong>Exporte</strong> os links encontrados em formato M3U (compatível com VLC, Kodi, IPTV players) ou ZIP com os metadados.</div></div>
+        <div class="about-step">
+          <div class="about-step-n">1</div>
+          <div class="about-step-t"><strong>Explore</strong> os carrosséis da página inicial — Tendências, Lançamentos, Populares, por ano, idioma ou plataforma de streaming.</div>
+        </div>
+        <div class="about-step">
+          <div class="about-step-n">2</div>
+          <div class="about-step-t"><strong>Busque</strong> qualquer título pelo nome usando a barra de pesquisa, ou filtre por gênero, nota, ano e idioma na busca avançada.</div>
+        </div>
+        <div class="about-step">
+          <div class="about-step-n">3</div>
+          <div class="about-step-t"><strong>Clique no card</strong> para abrir o painel completo: informações, classificação indicativa, elenco, trailer e streams disponíveis.</div>
+        </div>
+        <div class="about-step">
+          <div class="about-step-n">4</div>
+          <div class="about-step-t"><strong>Acesse o stream</strong> diretamente pelo botão Abrir, ou copie o link para usar no player de sua preferência.</div>
+        </div>
       </div>
 
-      
+      <!-- POWERED BY -->
+      <div class="about-sec">Tecnologias</div>
+      <div class="about-powered">
+        <div class="about-powered-item">
+          <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_2-9665a76b1ae401a510ec1e0ca40ddcb3b0cfe45f1d51b77a308fea0845885648.svg" alt="TMDB">
+          <span>Metadados, imagens e trailers</span>
+        </div>
+        <div class="about-powered-item">
+          <img src="https://raw.githubusercontent.com/Stremio/stremio-brand/3f3743087b11e81374cf943aaf1e041af1c97ee3/logos/SVG/stremio-logo-icon-only-fullcolor.svg" alt="Stremio" style="height:26px">
+          <span>Addons Stremio-compatíveis</span>
+        </div>
+        <div class="about-powered-item">
+          <img src="https://nuvio-tv.com/img/Logo_1080x1080.png" alt="Nuvio" style="height:26px;border-radius:6px">
+          <span>Addons Nuvio-compatíveis</span>
+        </div>
+      </div>
+
+      <!-- FONTES DE STREAM -->
       <div class="about-sec">Fontes de Stream</div>
       <div class="about-sources">
-        
         <div class="about-src" style="background:var(--c-frost-bg);border-color:var(--c-frost-bdr);">
-  <div class="about-src-dot" style="background:var(--c-frost);"></div>
-  <div class="about-src-name" style="color:var(--c-frost);">FrostStream</div>
-  <div class="about-src-url">froststream.cloutteam.com</div>
-</div>
-        
+          <div class="about-src-dot" style="background:var(--c-frost);"></div>
+          <div class="about-src-name" style="color:var(--c-frost);">FrostStream</div>
+          <div class="about-src-url">froststream.cloutteam.com</div>
+        </div>
         <div class="about-src" style="background:var(--c-king-bg);border-color:var(--c-king-bdr);">
           <div class="about-src-dot" style="background:var(--c-king);"></div>
           <div class="about-src-name" style="color:var(--c-king);">King VOD</div>
@@ -1280,6 +1341,40 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         </div>
       </div>
 
+      <!-- CONTEÚDO DISPONÍVEL -->
+      <div class="about-sec">Conteúdo por Plataforma</div>
+      <div class="about-streaming-grid">
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/5/5d/Netflix_2014.svg" alt="Netflix">
+          <span>Netflix</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/b/b3/HBO_Max_%282025%29.svg" alt="HBO Max">
+          <span>HBO Max</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/8/80/Amazon_Prime_Video_2024.svg" alt="Prime Video">
+          <span>Prime Video</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/c/ca/AppleTV_2025.png" alt="Apple TV+">
+          <span>Apple TV+</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/3/36/Paramount%2B_2021.svg" alt="Paramount+">
+          <span>Paramount+</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/f/f8/Globoplay2020_red.svg" alt="Globoplay">
+          <span>Globoplay</span>
+        </div>
+        <div class="about-stream-item">
+          <img src="https://static.wikia.nocookie.net/logopedia/images/f/f8/Disney%2B_%282024%29.svg" alt="Disney+">
+          <span>Disney+</span>
+        </div>
+      </div>
+
+      <!-- CLASSIFICAÇÃO -->
       <div class="about-sec">Classificação Indicativa</div>
       <div class="about-rat-grid">
         <div class="about-rat-item"><span class="rat-badge rat-L">L</span><span class="about-rat-desc">Livre para todos</span></div>
@@ -1290,7 +1385,7 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         <div class="about-rat-item"><span class="rat-badge rat-18">18</span><span class="about-rat-desc">Maior de 18 anos</span></div>
       </div>
 
-      <div class="about-note">Para uso pessoal · Desenvolvido por Adonias · Dados: TMDB API</div>
+      <div class="about-note">Para uso pessoal · Desenvolvido por Adonias Almeida · Dados via TMDB API</div>
     </div>
   </div>
 </div>
@@ -1499,7 +1594,6 @@ async function loadCars(){
     const wrap=buildGroupSec(grp);
     area.appendChild(wrap);
     const cars=wrap.querySelectorAll('[data-car]');
-    // carrega filmes e séries em paralelo
     await Promise.all([
       fillCarEl(cars[0],{ep:grp.movie.ep, params:grp.movie.params, type:'movie'}),
       fillCarEl(cars[1],{ep:grp.tv.ep,    params:grp.tv.params,    type:'tv'}),
@@ -1541,7 +1635,6 @@ function buildGroupSec(grp){
 // preenche um elemento .car com dados da TMDB
 async function fillCarEl(carEl, {ep, params, type}){
   try{
-    const nowPlayingEps=['movie/now_playing','movie/upcoming'];
     let url;
     if(params){
       url=`https://api.themoviedb.org/3/${ep}?api_key=${TMDB}&language=pt-BR&page=1&${params}`;
@@ -1553,14 +1646,11 @@ async function fillCarEl(carEl, {ep, params, type}){
     const d=await fetch(url).then(r=>r.json());
     const isCinema=ep==='movie/now_playing';
     carEl.innerHTML='';
-    (d.results||[])
-      .filter(it=>(it.title||it.name||'').trim()!=='')
-      .slice(0,20)
-      .forEach((it,i)=>{
-        const itemType=type==='mixed'?(it.media_type||'movie'):type;
-        const badge=isCinema?'cinema':null;
-        carEl.appendChild(mkBrowseCard(it,itemType,i,badge));
-      });
+    (d.results||[]).filter(it=>(it.title||it.name||'').trim()!=='').forEach((it,i)=>{
+      const itemType=type==='mixed'?(it.media_type||'movie'):type;
+      const badge=isCinema?'cinema':null;
+      carEl.appendChild(mkBrowseCard(it,itemType,i,badge));
+    });
     if(!carEl.children.length) carEl.innerHTML='<div style="padding:20px;color:var(--tx3);font-size:13px">Nenhum título encontrado.</div>';
   } catch(e){
     carEl.innerHTML='<div style="padding:20px;color:var(--tx3);font-size:13px">Erro ao carregar.</div>';
@@ -1678,7 +1768,7 @@ function goHome(){
 //  Streams são buscados ao abrir o modal
 // ══════════════════════════════════════════════
 
-// debounce para busca ao digitar
+// ── Debounce ──
 let _searchTimer=null;
 function onSearchInput(){
   clearTimeout(_searchTimer);
@@ -1891,8 +1981,22 @@ async function openBrowseModal(it,type){
       poster:it.poster_path?`https://image.tmdb.org/t/p/w500${it.poster_path}`:'',
       heroImg:it.backdrop_path?`https://image.tmdb.org/t/p/w780${it.backdrop_path}`:'',
       votes:it.vote_count||0,
+      titleLogoPath:null,  // preenchido abaixo via /images
+      trailerBg:null,       // backdrop alternativo diferente do hero
       currentSeason:1, currentEp:1,
     };
+    // busca backdrop alternativo (diferente do hero) + logo do título
+    try{
+      const imgData=await fetch(`https://api.themoviedb.org/3/${type}/${it.id}/images?api_key=${TMDB}&include_image_language=pt,en,null`).then(r=>r.json());
+      // backdrops: pega o 2º para ser diferente do hero (que usa o 1º / backdrop_path)
+      const bds=imgData.backdrops||[];
+      const altBd=bds[1]||bds[0];  // fallback para o 1º se só houver um
+      if(altBd) m.trailerBg=`https://image.tmdb.org/t/p/w780${altBd.file_path}`;
+      // logo: prefere PT, depois EN
+      const logos=imgData.logos||[];
+      const logo=logos.find(l=>l.iso_639_1==='pt')||logos.find(l=>l.iso_639_1==='en')||logos[0];
+      if(logo) m.titleLogoPath=logo.file_path;
+    }catch(_){}
     // atualiza painel info
     buildInfoPanel(m);
     // busca streams
@@ -2020,11 +2124,12 @@ function buildInfoPanel(m){
       <button class="btn-tv">Aplicar</button>
     </div><div class="tv-ep-name"></div>
   </div>`:'';
+  // thumbnail: backdrop alternativo do TMDB (diferente do hero)
+  const thumbBg=m.trailerBg||m.heroImg||`https://img.youtube.com/vi/${m.trailerKey}/maxresdefault.jpg`;
   const trailer=m.trailerKey?`<div class="trailer-wrap" id="tw-${m.trailerKey}" onclick="playTrailer('${m.trailerKey}',this)">
-    <img class="trailer-thumb"
-      src="https://img.youtube.com/vi/${m.trailerKey}/maxresdefault.jpg"
-      onerror="this.src='https://img.youtube.com/vi/${m.trailerKey}/hqdefault.jpg'"
-      alt="Trailer" loading="lazy">
+    <img class="trailer-thumb" src="${thumbBg}" alt="Trailer" loading="lazy"
+      onerror="this.src='https://img.youtube.com/vi/${m.trailerKey}/hqdefault.jpg'">
+    <div class="trailer-logo-wrap" id="tlogo-${m.trailerKey}"></div>
     <div class="trailer-label">🎬 Trailer</div>
     <div class="trailer-play"><div class="trailer-play-btn">▶</div></div>
   </div>`:'';
@@ -2041,6 +2146,11 @@ function buildInfoPanel(m){
     ${tvPick}${trailer}
   `;
   if(m.type==='tv') buildTvPick('ip-tv',m,async(sn,en)=>{m.currentSeason=sn;m.currentEp=en;});
+  // injeta logo do título no trailer se disponível
+  if(m.trailerKey && m.titleLogoPath){
+    const lw=document.getElementById('tlogo-'+m.trailerKey);
+    if(lw) lw.innerHTML=`<img src="https://image.tmdb.org/t/p/w500${m.titleLogoPath}" alt="${m.title}">`;
+  }
 }
 
 function buildStreamsPanel(entry){
@@ -2202,7 +2312,14 @@ function showTrailerFallback(wrap,key){
   </div>`;
 }
 
-function closeModal(){document.getElementById('modal').style.display='none';document.body.style.overflow='';}
+function closeModal(){
+  // para o trailer: remove src do iframe antes de esconder o modal
+  document.querySelectorAll('.trailer-frame').forEach(f=>{
+    f.src=''; f.remove();
+  });
+  document.getElementById('modal').style.display='none';
+  document.body.style.overflow='';
+}
 
 // ══ NET ══
 async function proxyFetch(origin,path){
