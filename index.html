@@ -1451,8 +1451,8 @@ async function loadHero(){
     // trending/all/day já traz filmes E séries misturados — um único fetch
     const dt=await tmdbGet('trending/all/day?language=pt-BR');
     const trendAll=(dt.results||[]).filter(it=>it.media_type==='movie'||it.media_type==='tv').slice(0,8);
-    const movies=trendAll.filter(it=>it.media_type==='movie').slice(0,4).map(it=>({...it,_heroType:'movie'}));
-    const series=trendAll.filter(it=>it.media_type==='tv').slice(0,4).map(it=>({...it,_heroType:'tv'}));
+    const movies=trendAll.filter(it=>it.media_type==='movie').slice(0,5).map(it=>({...it,_heroType:'movie'}));
+    const series=trendAll.filter(it=>it.media_type==='tv').slice(0,5).map(it=>({...it,_heroType:'tv'}));
     // intercala filme/série alternadamente
     heroItems=[];
     const len=Math.max(movies.length,series.length);
@@ -1460,7 +1460,7 @@ async function loadHero(){
       if(movies[i]) heroItems.push(movies[i]);
       if(series[i]) heroItems.push(series[i]);
     }
-    heroItems=heroItems.slice(0,7);
+    heroItems=heroItems.slice(0,10);
     buildHeroDots(); showHero(0);
     heroTimer=setInterval(()=>{heroIdx=(heroIdx+1)%heroItems.length;showHero(heroIdx);},7500);
   }catch(e){console.warn(e);}
