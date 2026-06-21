@@ -1581,15 +1581,8 @@ const CAR_GROUPS=[
   { label:'Populares',
     movie:{ep:'discover/movie', params:'sort_by=popularity.desc&'+_BASE+'200'},
     tv:  {ep:'discover/tv',    params:'sort_by=popularity.desc&'+_BASE+'100'} },
-  // 4. Ano
-  { label:'Ano '+new Date().getFullYear(),
-    movie:{ep:'discover/movie', params:'primary_release_year='+new Date().getFullYear()+'&sort_by=popularity.desc&'+_BASE+'30'},
-    tv:  {ep:'discover/tv',    params:'first_air_date.gte='+new Date().getFullYear()+'-01-01&sort_by=popularity.desc&'+_BASE+'10'} },
-  // 5. Idioma
-  { label:'Idioma — Português',
-    movie:{ep:'discover/movie', params:'sort_by=popularity.desc&'+_BR+'20'},
-    tv:  {ep:'discover/tv',    params:'sort_by=popularity.desc&'+_BR+'10'} },
-  // 6–12. Streaming
+  
+  // 4–10. Streaming
   { label:'Netflix',
     movie:{ep:'discover/movie', params:'with_watch_providers=8&sort_by=popularity.desc&'+_BASE+'50'},
     tv:  {ep:'discover/tv',    params:'with_watch_providers=8&sort_by=popularity.desc&'+_BASE+'30'} },
