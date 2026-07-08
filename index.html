@@ -2043,20 +2043,54 @@ async function openBrowseModal(it,type){
       fetch(`https://api.themoviedb.org/3/${type}/${it.id}?api_key=${TMDB}&language=pt-BR&append_to_response=credits,videos,${certEp}`).then(r=>r.json())
         .then(async d=>{
           // se não achou trailer com language=pt-BR, busca sem filtro
-          const vids=d.videos?.results||[];
-          const hasTrailer=vids.some(v=>v.site==='YouTube'&&(v.type==='Trailer'||v.type==='Teaser'));
-          if(!hasTrailer){
-            try{
-              const vd=await fetch(`https://api.themoviedb.org/3/${type}/${it.id}/videos?api_key=${TMDB}`).then(r=>r.json());
-              d.videos={results:(d.videos?.results||[]).concat(vd.results||[])};
-            }catch(_){}
-          }
+          // sempre busca vídeos sem filtro de idioma e concatena
+          // assim pickTrailer tem mais opções para escolher o melhor trailer
+          try{
+            const vd=await fetch(`https://api.themoviedb.org/3/${type}/${it.id}/videos?api_key=${TMDB}`).then(r=>r.json());
+            const existing=new Set((d.videos?.results||[]).map(v=>v.key));
+            const extra=(vd.results||[]).filter(v=>!existing.has(v.key));
+            d.videos={results:(d.videos?.results||[]).concat(extra)};
+          }catch(_){}
           return d;
         }),
     ]);
     if(modal.style.display==='none') return; // fechou enquanto carregava
     const videos=detail.videos?.results||[];
-    const tKey=(videos.find(v=>v.site==='YouTube'&&v.type==='Trailer')||videos.find(v=>v.site==='YouTube')||{}).key||null;
+    // seleção de trailer em ordem de prioridade:
+    // 1. Trailer oficial PT (nome contém "oficial" ou "legendado")
+    // 2. Trailer oficial EN (nome contém "official" ou "trailer")
+    // 3. Trailer mais recente PT
+    // 4. Trailer mais recente EN
+    // 5. Qualquer trailer mais recente
+    // 6. Teaser mais recente
+    // 7. Qualquer vídeo do YouTube
+    function pickTrailer(vids){
+      const yt=vids.filter(v=>v.site==='YouTube');
+      const trailers=yt.filter(v=>v.type==='Trailer')
+        .sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0));
+      const teasers=yt.filter(v=>v.type==='Teaser')
+        .sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0));
+      // trailers PT oficiais
+      const ptOfficial=trailers.find(v=>v.iso_639_1==='pt'&&/oficial|legendado|portugu/i.test(v.name));
+      if(ptOfficial) return ptOfficial;
+      // trailers EN oficiais
+      const enOfficial=trailers.find(v=>v.iso_639_1==='en'&&/official.*trailer|trailer.*official/i.test(v.name));
+      if(enOfficial) return enOfficial;
+      // trailer EN com "trailer" no nome
+      const enTrailer=trailers.find(v=>v.iso_639_1==='en'&&/trailer/i.test(v.name));
+      if(enTrailer) return enTrailer;
+      // qualquer trailer PT
+      const ptAny=trailers.find(v=>v.iso_639_1==='pt');
+      if(ptAny) return ptAny;
+      // trailer EN mais recente
+      const enAny=trailers.find(v=>v.iso_639_1==='en');
+      if(enAny) return enAny;
+      // qualquer trailer
+      if(trailers[0]) return trailers[0];
+      // teaser como último recurso
+      return teasers[0]||null;
+    }
+    const tKey=pickTrailer(videos)?.key||null;
     const certReal=parseCertFromDetail(detail,type);
     const genres=(detail.genres||[]).map(g=>g.name);
     const rb=certReal?certToBadge(certReal):getRatingBadge(detail.adult||false,genres);
