@@ -51,7 +51,6 @@
   --c-mf:#3d8ef5;   --c-mf-bg:rgba(61,142,245,.12);   --c-mf-bdr:rgba(61,142,245,.3);
   --c-fnx:#a855f7;  --c-fnx-bg:rgba(168,85,247,.12);  --c-fnx-bdr:rgba(168,85,247,.3);
   --c-mgn: #8d6e63; --c-mgn-bg: rgba(141,110,99,.12); --c-mgn-bdr: rgba(141,110,99,.3);
-  --c-bstv:#14b8a6; --c-bstv-bg:rgba(20,184,166,.12); --c-bstv-bdr:rgba(20,184,166,.3);
 
   /* ── RATING COLORS ── */
   --rat-l:#22d46a;  /* Livre */
@@ -1406,12 +1405,7 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         </div>
         <div class="about-src" style="background:var(--c-mgn-bg);border-color:var(--c-mgn-bdr);">
           <div class="about-src-dot" style="background:var(--c-mgn);"></div>
-          <div class="about-src-name" style="color:var(--c-mgn);">MagnetBR</div>
-          <div class="about-src-url">magnetbr.online</div>
-        </div>
-        <div class="about-src" style="background:var(--c-bstv-bg);border-color:var(--c-bstv-bdr);">
-          <div class="about-src-dot" style="background:var(--c-bstv);"></div>
-          <div class="about-src-name" style="color:var(--c-bstv);">BSCine</div>
+          <div class="about-src-name" style="color:var(--c-mgn);">BSCine</div>
           <div class="about-src-url">bscine.alwaysdata.net</div>
         </div>
       </div>
@@ -1473,7 +1467,6 @@ const SOURCES = [
   {name:'King VOD', origin:'https://kingvod.wasmer.app/index.php'},
   {name:'PopPlay',    origin:'https://site--popplay--rg2h4m5nr425.code.run'},
   {name:'FenixFlix',  origin:'https://fenixflix.fenixhub.online'},
-  {name:'MagnetBR',  origin:'https://magnetbr.online'},
   {name:'BSCine',    origin:'https://bscine.alwaysdata.net'},
 ];
 const PROXIES = [
@@ -2324,8 +2317,7 @@ const SRC_CFG={
   'King VOD': {color:'var(--c-king)',  bg:'var(--c-king-bg)',  bdr:'var(--c-king-bdr)',  ico:'🟠'},
   'PopPlay':  {color:'var(--c-mf)',    bg:'var(--c-mf-bg)',    bdr:'var(--c-mf-bdr)',    ico:'🔵'},
   'FenixFlix': {color:'var(--c-fnx)',   bg:'var(--c-fnx-bg)',   bdr:'var(--c-fnx-bdr)',   ico:'🟣'},
-  'MagnetBR': {color: 'var(--c-mgn)',  bg: 'var(--c-mgn-bg)',  bdr: 'var(--c-mgn-bdr)',  ico: '🟤'},
-  'BSCine': {color: 'var(--c-bstv)', bg: 'var(--c-bstv-bg)', bdr: 'var(--c-bstv-bdr)', ico: '🔷'},
+  'BSCine': {color: 'var(--c-mgn)', bg: 'var(--c-mgn-bg)', bdr: 'var(--c-mgn-bdr)', ico: '🟤'},
 };
 function srcCfg(name){return SRC_CFG[name]||{color:'var(--c-oth)',bg:'var(--c-oth-bg)',bdr:'var(--c-oth-bdr)',ico:'🟢'};}
 
