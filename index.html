@@ -914,8 +914,12 @@ img{max-width:100%;}
 }
 .about-src:hover{opacity:.85;}
 .about-src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.about-src-name{font-size:13px;font-weight:700;flex:1;}
+.about-src-name{font-size:13px;font-weight:700;flex:1;display:flex;align-items:center;gap:7px;}
 .about-src-url{font-size:11px;color:var(--tx3);font-family:monospace;}
+.about-src.checking{opacity:.7;}
+.about-src.offline{opacity:.4;filter:grayscale(.7);}
+.about-src.offline .about-src-name{color:var(--tx3)!important;}
+.about-src.offline .about-src-dot{background:var(--tx3)!important;}
 
 /* ══════════ FOOTER ══════════ */
 footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
@@ -1383,32 +1387,33 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
       <!-- FONTES DE STREAM -->
       <div class="about-sec">Fontes de Stream</div>
       <div class="about-sources">
-        <div class="about-src" style="background:var(--c-frost-bg);border-color:var(--c-frost-bdr);">
+        <div class="about-src" data-src="FrostStream" style="background:var(--c-frost-bg);border-color:var(--c-frost-bdr);">
           <div class="about-src-dot" style="background:var(--c-frost);"></div>
           <div class="about-src-name" style="color:var(--c-frost);">FrostStream</div>
           <div class="about-src-url">froststream.cloutteam.com</div>
         </div>
-        <div class="about-src" style="background:var(--c-king-bg);border-color:var(--c-king-bdr);">
+        <div class="about-src" data-src="King VOD" style="background:var(--c-king-bg);border-color:var(--c-king-bdr);">
           <div class="about-src-dot" style="background:var(--c-king);"></div>
           <div class="about-src-name" style="color:var(--c-king);">King VOD</div>
           <div class="about-src-url">kingvod.wasmer.app</div>
         </div>
-        <div class="about-src" style="background:var(--c-mf-bg);border-color:var(--c-mf-bdr);">
+        <div class="about-src" data-src="PopPlay" style="background:var(--c-mf-bg);border-color:var(--c-mf-bdr);">
           <div class="about-src-dot" style="background:var(--c-mf);"></div>
           <div class="about-src-name" style="color:var(--c-mf);">PopPlay</div>
           <div class="about-src-url">site--popplay--rg2h4m5nr425.code.run</div>
         </div>
-        <div class="about-src" style="background:var(--c-fnx-bg);border-color:var(--c-fnx-bdr);">
+        <div class="about-src" data-src="FenixFlix" style="background:var(--c-fnx-bg);border-color:var(--c-fnx-bdr);">
           <div class="about-src-dot" style="background:var(--c-fnx);"></div>
           <div class="about-src-name" style="color:var(--c-fnx);">FenixFlix</div>
-          <div class="about-src-url">fenixflix.fenixhub.online</div>
+          <div class="about-src-url">fenixflix.discloud.app</div>
         </div>
-        <div class="about-src" style="background:var(--c-mgn-bg);border-color:var(--c-mgn-bdr);">
+        <div class="about-src" data-src="BSCine" style="background:var(--c-mgn-bg);border-color:var(--c-mgn-bdr);">
           <div class="about-src-dot" style="background:var(--c-mgn);"></div>
           <div class="about-src-name" style="color:var(--c-mgn);">BSCine</div>
           <div class="about-src-url">bscine.alwaysdata.net</div>
         </div>
       </div>
+
 
       <!-- CONTEÚDO DISPONÍVEL -->
       <div class="about-sec">Conteúdo por Plataforma</div>
@@ -1466,7 +1471,7 @@ const SOURCES = [
   {name:'FrostStream', origin:'https://froststream.cloutteam.com'},
   {name:'King VOD', origin:'https://kingvod.wasmer.app/index.php'},
   {name:'PopPlay',    origin:'https://site--popplay--rg2h4m5nr425.code.run'},
-  {name:'FenixFlix',  origin:'https://fenixflix.fenixhub.online'},
+  {name:'FenixFlix',  origin:'https://fenixflix.discloud.app'},
   {name:'BSCine',    origin:'https://bscine.alwaysdata.net'},
 ];
 const PROXIES = [
@@ -1513,7 +1518,32 @@ function openDrawer(){document.getElementById('drawer').classList.add('open');do
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.body.style.overflow='';}
 
 // ══ ABOUT ══
-function openAbout(){document.getElementById('aboutModal').classList.add('open');document.body.style.overflow='hidden';}
+function openAbout(){
+  document.getElementById('aboutModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  checkAllSourcesStatus();
+}
+
+// Testa cada fonte batendo no mesmo endpoint que o app usa de verdade pra buscar streams
+// (imdb de teste: Um Sonho de Liberdade). Só roda uma vez por sessão pra não martelar as fontes.
+let _srcStatusChecked = false;
+async function checkAllSourcesStatus(){
+  if(_srcStatusChecked) return;
+  _srcStatusChecked = true;
+  const TEST_PATH = '/stream/movie/tt0111161.json';
+  SOURCES.forEach(s=>{
+    const el = document.querySelector(`.about-src[data-src="${s.name}"]`);
+    if(!el) return;
+    el.classList.add('checking');
+    proxyFetch(s.origin, TEST_PATH).then(r=>{
+      el.classList.remove('checking');
+      if(!(r && r.ok)) el.classList.add('offline');
+    }).catch(()=>{
+      el.classList.remove('checking');
+      el.classList.add('offline');
+    });
+  });
+}
 function closeAbout(){document.getElementById('aboutModal').classList.remove('open');document.body.style.overflow='';}
 
 // ══ GENRE SHORTCUT (from nav) ══
