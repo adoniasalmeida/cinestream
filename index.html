@@ -1479,18 +1479,9 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 <script>
 // ══ CONFIG ══
 // Depois de publicar o Worker (ver worker.js), troque essa URL pela do seu Worker
-const API_BASE = 'https://cinestream-api.SEUUSUARIO.workers.dev';
+const API_BASE = 'https://cinestream.adoniasalmeida.workers.dev';
 
-const TMDB = '0875f328e3fa25a394f9ad98ff1eaac2'; // fallback: só é usado se o Worker estiver fora do ar
-let SOURCES = [
-  {name:'FrostStream', origin:'https://froststream.cloutteam.com'},
-  {name:'King VOD', origin:'https://kingvod.wasmer.app/index.php'},
-  {name:'PopPlay',    origin:'https://site--popplay--rg2h4m5nr425.code.run'},
-  {name:'FenixFlix',  origin:'https://fenixflix.discloud.app'},
-  {name:'BSCine',    origin:'https://bscine.alwaysdata.net'},
-  {name:'BestCine',  origin:'https://bestcine.alwaysdata.net'},
-  {name:'SuperStream', origin:'https://da5f663b4690-superstream.baby-beamup.club'},
-]; // lista acima = fallback local. Assim que o Worker responde, ela é substituída pela versão do servidor.
+ // lista acima = fallback local. Assim que o Worker responde, ela é substituída pela versão do servidor.
 (async()=>{
   try{
     const remote = await fetch(`${API_BASE}/sources`).then(r=>r.ok?r.json():null);
