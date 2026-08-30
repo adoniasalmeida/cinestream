@@ -1386,44 +1386,10 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
         </div>
       </div>
 
-      <!-- FONTES DE STREAM -->
+      <!-- FONTES DE STREAM (gerado dinamicamente a partir do Worker) -->
       <div class="about-sec">Fontes de Stream</div>
-      <div class="about-sources">
-        <div class="about-src" data-src="FrostStream" style="background:var(--c-frost-bg);border-color:var(--c-frost-bdr);">
-          <div class="about-src-dot" style="background:var(--c-frost);"></div>
-          <div class="about-src-name" style="color:var(--c-frost);">FrostStream</div>
-          <div class="about-src-url">froststream.cloutteam.com</div>
-        </div>
-        <div class="about-src" data-src="King VOD" style="background:var(--c-king-bg);border-color:var(--c-king-bdr);">
-          <div class="about-src-dot" style="background:var(--c-king);"></div>
-          <div class="about-src-name" style="color:var(--c-king);">King VOD</div>
-          <div class="about-src-url">kingvod.wasmer.app</div>
-        </div>
-        <div class="about-src" data-src="PopPlay" style="background:var(--c-mf-bg);border-color:var(--c-mf-bdr);">
-          <div class="about-src-dot" style="background:var(--c-mf);"></div>
-          <div class="about-src-name" style="color:var(--c-mf);">PopPlay</div>
-          <div class="about-src-url">site--popplay--rg2h4m5nr425.code.run</div>
-        </div>
-        <div class="about-src" data-src="FenixFlix" style="background:var(--c-fnx-bg);border-color:var(--c-fnx-bdr);">
-          <div class="about-src-dot" style="background:var(--c-fnx);"></div>
-          <div class="about-src-name" style="color:var(--c-fnx);">FenixFlix</div>
-          <div class="about-src-url">fenixflix.discloud.app</div>
-        </div>
-        <div class="about-src" data-src="BSCine" style="background:var(--c-mgn-bg);border-color:var(--c-mgn-bdr);">
-          <div class="about-src-dot" style="background:var(--c-mgn);"></div>
-          <div class="about-src-name" style="color:var(--c-mgn);">BSCine</div>
-          <div class="about-src-url">bscine.alwaysdata.net</div>
-        </div>
-        <div class="about-src" data-src="BestCine" style="background:var(--c-best-bg);border-color:var(--c-best-bdr);">
-          <div class="about-src-dot" style="background:var(--c-best);"></div>
-          <div class="about-src-name" style="color:var(--c-best);">BestCine</div>
-          <div class="about-src-url">bestcine.alwaysdata.net</div>
-        </div>
-        <div class="about-src" data-src="SuperStream" style="background:var(--c-super-bg);border-color:var(--c-super-bdr);">
-          <div class="about-src-dot" style="background:var(--c-super);"></div>
-          <div class="about-src-name" style="color:var(--c-super);">SuperStream</div>
-          <div class="about-src-url">da5f663b4690-superstream.baby-beamup.club</div>
-        </div>
+      <div class="about-sources" id="aboutSourcesGrid">
+        <div style="color:var(--tx3);font-size:13px;padding:4px 0;">Carregando fontes...</div>
       </div>
 
 
@@ -1478,16 +1444,15 @@ footer{border-top:1px solid var(--bdr);padding:28px 18px;display:flex;align-item
 
 <script>
 // ══ CONFIG ══
-// Depois de publicar o Worker (ver worker.js), troque essa URL pela do seu Worker
 const API_BASE = 'https://cinestream.adoniasalmeida.workers.dev';
 
- // lista acima = fallback local. Assim que o Worker responde, ela é substituída pela versão do servidor.
-(async()=>{
-  try{
-    const remote = await fetch(`${API_BASE}/sources`).then(r=>r.ok?r.json():null);
-    if(Array.isArray(remote) && remote.length) SOURCES = remote;
-  }catch(e){ /* Worker fora do ar ou ainda não publicado — segue com a lista local acima */ }
-})();
+const TMDB = ''; // não usado mais — a chave real fica só no Worker (variável de ambiente TMDB_KEY)
+let SOURCES = [];
+// Todo o app depende dessa promise antes de usar SOURCES (fetchAll, checkAllSourcesStatus etc.)
+const SOURCES_READY = fetch(`${API_BASE}/sources`)
+  .then(r=>r.ok?r.json():[])
+  .then(d=>{ SOURCES = Array.isArray(d)?d:[]; })
+  .catch(()=>{ SOURCES = []; });
 const PROXIES = [
   u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
   u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
@@ -1535,6 +1500,32 @@ function closeDrawer(){document.getElementById('drawer').classList.remove('open'
 function openAbout(){
   document.getElementById('aboutModal').classList.add('open');
   document.body.style.overflow='hidden';
+  renderAboutSources();
+}
+
+// Extrai um domínio "limpo" da origin pra exibir (sem https://, sem path tipo /index.php)
+function displayOrigin(origin){
+  return origin.replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+}
+
+// Monta os cards de fonte direto do array SOURCES (vindo do Worker) — não precisa mais editar o HTML
+let _aboutSourcesRendered = false;
+async function renderAboutSources(){
+  await SOURCES_READY;
+  const grid = document.getElementById('aboutSourcesGrid');
+  if(!SOURCES.length){
+    grid.innerHTML = '<div style="color:var(--tx3);font-size:13px;padding:4px 0;">Não foi possível carregar as fontes agora.</div>';
+    return;
+  }
+  grid.innerHTML = SOURCES.map(s=>{
+    const cfg = srcCfg(s.name);
+    return `<div class="about-src" data-src="${s.name}" style="background:${cfg.bg};border-color:${cfg.bdr};">
+      <div class="about-src-dot" style="background:${cfg.color};"></div>
+      <div class="about-src-name" style="color:${cfg.color};">${s.name}</div>
+      <div class="about-src-url">${displayOrigin(s.origin)}</div>
+    </div>`;
+  }).join('');
+  _aboutSourcesRendered = true;
   checkAllSourcesStatus();
 }
 
@@ -1542,7 +1533,7 @@ function openAbout(){
 // (imdb de teste: Um Sonho de Liberdade). Só roda uma vez por sessão pra não martelar as fontes.
 let _srcStatusChecked = false;
 async function checkAllSourcesStatus(){
-  if(_srcStatusChecked) return;
+  if(_srcStatusChecked || !_aboutSourcesRendered) return;
   _srcStatusChecked = true;
   const TEST_PATH = '/stream/movie/tt0111161.json';
   SOURCES.forEach(s=>{
@@ -2533,6 +2524,7 @@ async function proxyFetch(origin,path){
   return fetch(target);
 }
 async function fetchAll(path){
+  await SOURCES_READY;
   const rs=await Promise.allSettled(SOURCES.map(s=>proxyFetch(s.origin,path).then(r=>r.ok?r.json():null)));
   const out=[],seen=new Set();
   rs.forEach((r,si)=>{if(r.status==='fulfilled'&&r.value?.streams?.length){r.value.streams.forEach(s=>{const url=s.url||s.externalUrl||'';const k=url||(s.title||s.name||'')+si;if(!seen.has(k)){seen.add(k);out.push({...s,_source:SOURCES[si].name});}});}});
