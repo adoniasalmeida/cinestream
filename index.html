@@ -2490,8 +2490,8 @@ function showTrailerFallback(wrap,key){
 // ── Compartilhar título ──
 function shareTitle(){
   if(!_modalMeta.id) return;
-  const base=location.origin+location.pathname;
-  const url=`${base}?id=${_modalMeta.id}&type=${_modalMeta.type||'movie'}`;
+  const type=_modalMeta.type||'movie';
+  const url=`${API_BASE}/share/${type}/${_modalMeta.id}`;
   if(navigator.share){
     navigator.share({url}).catch(e=>{ if(e?.name!=='AbortError') fallbackShare(url); });
   } else {
