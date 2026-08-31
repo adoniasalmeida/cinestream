@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CineStream — Admin de Fontes</title>
+<title>CineStream — Painel de Fontes</title>
 <style>
   :root{
     --bg:#0f1115; --surf:#171a21; --surf2:#1e222b; --bdr:#2a2f3a; --bdr2:#343a47;
@@ -36,12 +36,12 @@
 </head>
 <body>
 
-<h1>🛠️ CineStream — Admin de Fontes</h1>
-<div class="sub">Edita a lista de fontes de stream direto no Worker (KV), sem precisar entrar no painel da Cloudflare.</div>
+<h1>⚙️ CineStream — Painel de Fontes</h1>
+<div class="sub">Edite a lista de fontes de stream direto no Worker.</div>
 
 <div class="card">
-  <label>Token de admin (ADMIN_TOKEN)</label>
-  <input type="password" id="token" placeholder="Cole aqui a senha configurada no Worker">
+  <label>Token de login</label>
+  <input type="password" id="token" placeholder="Cole aqui token de acesso">
   <label style="display:flex;align-items:center;gap:6px;font-weight:400;">
     <input type="checkbox" id="remember" style="width:auto;margin:0;"> Lembrar neste navegador
   </label>
@@ -52,7 +52,7 @@
   <button class="btn-add" onclick="addRow()">+ Adicionar fonte</button>
 </div>
 
-<button class="btn-main" onclick="saveAll()">Salvar alterações no Worker</button>
+<button class="btn-main" onclick="saveAll()">Salvar alterações</button>
 <div id="status"></div>
 
 <script>
